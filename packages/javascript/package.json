@@ -1,6 +1,6 @@
 {
   "name": "@futux/whitebox-dedup",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Interpretable entity deduplication using auditable MARS equations and conformal prediction in TypeScript",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
