@@ -263,6 +263,51 @@
     border-color: var(--accent-primary);
   }
 
+  /* Pagination Bar (Top & Bottom) */
+  .pagination-bar {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+    gap: 0.75rem; padding: 0.75rem 0; font-size: 0.78rem; color: var(--text-secondary);
+  }
+  .pagination-bar.top {
+    border-bottom: 1px solid var(--table-border); margin-bottom: 0.5rem;
+  }
+  .pagination-bar.bottom {
+    border-top: 1px solid var(--table-border); margin-top: 0.75rem;
+  }
+  .pagination-info {
+    display: flex; align-items: center; gap: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  }
+  .page-size-select {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    color: var(--text-primary); border-radius: var(--radius-sm); padding: 0.25rem 0.5rem;
+    font-size: 0.75rem; font-family: inherit; outline: none; cursor: pointer;
+  }
+  .pagination-nav {
+    display: flex; align-items: center; gap: 0.35rem;
+  }
+  .page-btn {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    color: var(--text-primary); min-width: 30px; height: 30px; padding: 0 0.5rem;
+    border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .page-btn:hover:not(:disabled) {
+    border-color: var(--accent-primary); color: var(--accent-primary);
+  }
+  .page-btn.active {
+    background: var(--accent-primary); color: #FFFFFF; border-color: var(--accent-primary);
+  }
+  .page-btn:disabled {
+    opacity: 0.35; cursor: not-allowed;
+  }
+  .page-ellipsis {
+    padding: 0 0.25rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
+  }
+  .page-summary {
+    font-size: 0.75rem; color: var(--text-muted); margin-left: 0.35rem; font-family: 'JetBrains Mono', monospace;
+  }
+
   /* Slider UI */
   .slider-card {
     background: var(--card-surface); border: 1px solid var(--card-border);
@@ -448,7 +493,7 @@
       </div>
 
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
           <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
             <h3 style="font-size: 1.05rem; font-weight: 700;">Deduplication Results &amp; Audit Trail</h3>
             <div class="pill-group">
@@ -469,15 +514,19 @@
             </button>
           </div>
         </div>
-        <div style="max-height: 440px; overflow-y: auto;">
+
+        <!-- Top Pagination Bar -->
+        <div id="dedup-pagination-top" class="pagination-bar top"></div>
+
+        <div style="max-height: 480px; overflow-y: auto;">
           <table>
             <thead>
               <tr>
-                <th>Tier</th>
+                <th style="width: 130px;">Tier</th>
                 <th>Record A</th>
                 <th>Record B</th>
-                <th>JW Score</th>
-                <th>MARS Probability</th>
+                <th style="width: 90px;">JW Score</th>
+                <th style="width: 120px;">Probability</th>
                 <th>Auditable Equation Reason</th>
               </tr>
             </thead>
@@ -485,6 +534,9 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Bottom Pagination Bar -->
+        <div id="dedup-pagination-bottom" class="pagination-bar bottom"></div>
       </div>
     </div>
   </div>
@@ -685,6 +737,8 @@ function runSliderEval(valStr) {
 let loadedRecords = [];
 let activeResultFilter = 'all';
 let lastDeduplicationResults = null;
+let dedupCurrentPage = 1;
+let dedupPageSize = 20;
 
 // Drag & drop support
 const dropzone = document.getElementById("dropzone");
@@ -736,6 +790,7 @@ function populateColumnPicker(records, filename) {
 function recalculateOnColumnChange() {
   if (loadedRecords.length > 0) {
     const chosenNameCol = document.getElementById("col-name-select").value;
+    dedupCurrentPage = 1;
     processDatasetRecords(loadedRecords, chosenNameCol);
   }
 }
@@ -817,6 +872,7 @@ function processDatasetRecords(records, overrideNameCol) {
     pairs: pairs.sort((x, y) => y.probability - x.probability),
   };
 
+  dedupCurrentPage = 1;
   renderDedupResults(lastDeduplicationResults);
 }
 
@@ -831,17 +887,30 @@ function renderDedupResults(res) {
   renderDedupTable();
 }
 
-function renderDedupTable() {
-  if (!lastDeduplicationResults) return;
-  const tbody = document.getElementById("dedup-table-body");
-  const filtered = activeResultFilter === 'all'
+function getFilteredPairs() {
+  if (!lastDeduplicationResults) return [];
+  return activeResultFilter === 'all'
     ? lastDeduplicationResults.pairs
     : lastDeduplicationResults.pairs.filter(p => p.tier === activeResultFilter);
+}
 
-  if (filtered.length === 0) {
+function renderDedupTable() {
+  const filtered = getFilteredPairs();
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / dedupPageSize));
+
+  if (dedupCurrentPage > totalPages) dedupCurrentPage = totalPages;
+  if (dedupCurrentPage < 1) dedupCurrentPage = 1;
+
+  const startIdx = (dedupCurrentPage - 1) * dedupPageSize;
+  const endIdx = Math.min(startIdx + dedupPageSize, total);
+  const pageItems = filtered.slice(startIdx, endIdx);
+
+  const tbody = document.getElementById("dedup-table-body");
+  if (total === 0) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--emerald); padding: 2.5rem;">No pairs matching this filter category.</td></tr>';
   } else {
-    tbody.innerHTML = filtered.slice(0, 150).map(p => `
+    tbody.innerHTML = pageItems.map(p => `
       <tr>
         <td><span class="badge-tag badge-${p.tier}">${p.tier === 'tier1' ? 'Tier 1 Auto-Merge' : p.tier === 'tier2' ? 'Tier 2 Review' : 'Tier 3 Distinct'}</span></td>
         <td><strong>#${p.indexA + 1}</strong>: ${p.valA}</td>
@@ -852,10 +921,97 @@ function renderDedupTable() {
       </tr>
     `).join("");
   }
+
+  renderDedupPaginationControls(total, totalPages, startIdx, endIdx);
+}
+
+function renderDedupPaginationControls(total, totalPages, startIdx, endIdx) {
+  const topEl = document.getElementById("dedup-pagination-top");
+  const bottomEl = document.getElementById("dedup-pagination-bottom");
+
+  const windowText = total === 0 
+    ? "Showing 0 candidate pairs" 
+    : `Showing ${startIdx + 1}&ndash;${endIdx} of ${total} pairs`;
+
+  let pageButtonsHTML = "";
+  const maxButtons = 7;
+  let startP = 1, endP = totalPages;
+
+  if (totalPages > maxButtons) {
+    if (dedupCurrentPage <= 4) {
+      endP = 5;
+    } else if (dedupCurrentPage >= totalPages - 3) {
+      startP = totalPages - 4;
+    } else {
+      startP = dedupCurrentPage - 2;
+      endP = dedupCurrentPage + 2;
+    }
+  }
+
+  pageButtonsHTML += `
+    <button class="page-btn" onclick="goToDedupPage(${dedupCurrentPage - 1})" ${dedupCurrentPage === 1 ? 'disabled' : ''} title="Previous Page">
+      <svg class="lucide" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+  `;
+
+  if (startP > 1) {
+    pageButtonsHTML += `<button class="page-btn" onclick="goToDedupPage(1)">1</button>`;
+    if (startP > 2) pageButtonsHTML += `<span class="page-ellipsis">&hellip;</span>`;
+  }
+
+  for (let p = startP; p <= endP; p++) {
+    pageButtonsHTML += `
+      <button class="page-btn ${p === dedupCurrentPage ? 'active' : ''}" onclick="goToDedupPage(${p})">${p}</button>
+    `;
+  }
+
+  if (endP < totalPages) {
+    if (endP < totalPages - 1) pageButtonsHTML += `<span class="page-ellipsis">&hellip;</span>`;
+    pageButtonsHTML += `<button class="page-btn" onclick="goToDedupPage(${totalPages})">${totalPages}</button>`;
+  }
+
+  pageButtonsHTML += `
+    <button class="page-btn" onclick="goToDedupPage(${dedupCurrentPage + 1})" ${dedupCurrentPage === totalPages || totalPages === 0 ? 'disabled' : ''} title="Next Page">
+      <svg class="lucide" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  `;
+
+  const controlsHTML = `
+    <div class="pagination-info">
+      <span>${windowText}</span>
+      <label style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--text-muted);">
+        Per page:
+        <select class="page-size-select" onchange="setDedupPageSize(this.value)">
+          <option value="20" ${dedupPageSize === 20 ? 'selected' : ''}>20</option>
+          <option value="50" ${dedupPageSize === 50 ? 'selected' : ''}>50</option>
+          <option value="100" ${dedupPageSize === 100 ? 'selected' : ''}>100</option>
+        </select>
+      </label>
+    </div>
+    <div class="pagination-nav">
+      ${pageButtonsHTML}
+      <span class="page-summary">Page ${dedupCurrentPage} of ${totalPages}</span>
+    </div>
+  `;
+
+  topEl.innerHTML = controlsHTML;
+  bottomEl.innerHTML = controlsHTML;
+}
+
+function goToDedupPage(p) {
+  dedupCurrentPage = p;
+  renderDedupTable();
+}
+
+function setDedupPageSize(val) {
+  dedupPageSize = parseInt(val, 10);
+  dedupCurrentPage = 1;
+  renderDedupTable();
 }
 
 function filterResults(tier, btn) {
   activeResultFilter = tier;
+  dedupCurrentPage = 1;
   document.querySelectorAll(".card .pill-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
   renderDedupTable();
