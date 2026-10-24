@@ -3,171 +3,388 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whitebox-Dedup Live Circuit Breaker Playground</title>
+<title>Whitebox-Dedup | Interpretable ML Deduplication Playground</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root {
-    --bg: #0b0f19;
-    --card-bg: rgba(17, 24, 39, 0.75);
-    --card-border: rgba(255, 255, 255, 0.08);
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
-    --emerald: #10b981;
-    --blue: #3b82f6;
-    --amber: #f59e0b;
-    --purple: #8b5cf6;
+    --futux-petrol: #0B3541;
+    --futux-cyan: #0FBFF1;
+    --futux-orange: #FF914D;
+    --bg-dark: #050B12;
+    --card-bg: rgba(11, 53, 65, 0.25);
+    --card-surface: rgba(7, 23, 31, 0.72);
+    --card-border: rgba(15, 191, 241, 0.16);
+    --card-border-glow: rgba(15, 191, 241, 0.42);
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --emerald: #10B981;
+    --emerald-glow: rgba(16, 185, 129, 0.25);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 75%);
-    color: var(--text);
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(15, 191, 241, 0.14) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(255, 145, 77, 0.09) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(11, 53, 65, 0.45) 0px, transparent 65%);
+    color: var(--text-primary);
     min-height: 100vh;
-    padding: 2.5rem 1rem;
+    padding: 2.5rem 1.25rem;
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
-  .container { max-width: 1100px; margin: 0 auto; }
-  header { text-align: center; margin-bottom: 2.5rem; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.35rem 0.85rem; border-radius: 999px;
-    background: rgba(139, 92, 246, 0.15); color: #c4b5fd;
-    border: 1px solid rgba(139, 92, 246, 0.3); font-size: 0.75rem;
-    font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-    margin-bottom: 0.75rem;
+  .container { max-width: 1200px; margin: 0 auto; }
+  
+  header { text-align: center; margin-bottom: 2.25rem; }
+  .brand-pill {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.38rem 0.95rem; border-radius: 999px;
+    background: rgba(15, 191, 241, 0.08); border: 1px solid var(--card-border);
+    color: var(--futux-cyan); font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
   }
-  h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
-  h1 span { background: linear-gradient(135deg, #a78bfa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  p.subtitle { color: var(--text-muted); font-size: 1rem; max-width: 650px; margin: 0 auto; }
+  .brand-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--futux-orange); box-shadow: 0 0 8px var(--futux-orange); }
+  h1 { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  h1 span.cyan { color: var(--futux-cyan); }
+  h1 span.orange { color: var(--futux-orange); }
+  p.subtitle { color: var(--text-secondary); font-size: 1rem; max-width: 680px; margin: 0 auto; }
+  
+  .privacy-strip {
+    margin: 1.5rem auto 0; max-width: 780px;
+    background: rgba(11, 53, 65, 0.4); border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); padding: 0.85rem 1.25rem;
+    display: flex; align-items: center; gap: 0.75rem; text-align: left;
+    font-size: 0.8rem; color: #BAE6FD;
+  }
+  .privacy-strip strong { color: #F8FAFC; }
+
+  .nav-tabs {
+    display: flex; justify-content: center; gap: 0.75rem; margin: 2rem 0 1.5rem;
+  }
+  .tab-btn {
+    background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary); padding: 0.65rem 1.4rem; border-radius: 999px;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tab-btn:hover { background: rgba(15, 191, 241, 0.12); color: var(--text-primary); border-color: var(--card-border); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, rgba(15, 191, 241, 0.25), rgba(11, 53, 65, 0.8));
+    color: var(--futux-cyan); border-color: var(--futux-cyan);
+    box-shadow: 0 0 20px rgba(15, 191, 241, 0.25);
+  }
 
   .glass-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(14px);
-    border-radius: 18px;
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
     padding: 1.75rem;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    margin-bottom: 1.75rem;
+    transition: border-color 0.2s ease;
+  }
+  .glass-card:hover { border-color: var(--card-border-glow); }
+
+  /* Upload & Drag Zone */
+  .dropzone {
+    border: 2px dashed rgba(15, 191, 241, 0.32); border-radius: var(--radius-md);
+    padding: 2.25rem 1.5rem; text-align: center; cursor: pointer;
+    background: rgba(11, 53, 65, 0.18); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--futux-cyan); background: rgba(15, 191, 241, 0.09);
+    transform: translateY(-1px);
+  }
+  .upload-icon {
+    width: 44px; height: 44px; margin: 0 auto 0.75rem;
+    border-radius: 50%; background: rgba(15, 191, 241, 0.12);
+    display: flex; align-items: center; justify-content: center; color: var(--futux-cyan);
+  }
+
+  /* Stats Grid */
+  .grid-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;
     margin-bottom: 1.75rem;
   }
+  .stat-card {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); padding: 1.35rem 1.1rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--futux-cyan), transparent);
+    opacity: 0.4;
+  }
+  .stat-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-num { font-size: 2.4rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin: 0.35rem 0; line-height: 1.1; }
+  .stat-num.tier1 { color: var(--futux-cyan); text-shadow: 0 0 15px rgba(15, 191, 241, 0.3); }
+  .stat-num.tier2 { color: var(--futux-orange); text-shadow: 0 0 15px rgba(255, 145, 77, 0.3); }
+  .stat-num.tier3 { color: var(--emerald); }
 
-  .slider-box {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 14px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+  /* Slider Section */
+  .slider-card {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1.5rem;
   }
-  .slider-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 1rem; font-weight: 600;
-  }
-  .slider-header span.val {
-    font-family: 'JetBrains Mono', monospace; font-size: 1.6rem;
-    font-weight: 800; color: #38bdf8;
-  }
+  .slider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .slider-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 800; color: var(--futux-cyan); }
   input[type=range] {
     width: 100%; height: 8px; border-radius: 999px;
-    background: #334155; outline: none; cursor: pointer;
-    accent-color: #38bdf8;
+    background: #1E293B; outline: none; cursor: pointer; accent-color: var(--futux-cyan);
   }
-  .ticks {
+  .slider-ticks {
     display: flex; justify-content: space-between; font-size: 0.72rem;
-    color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
-    margin-top: 0.5rem;
+    color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 0.6rem;
   }
-  .tick-ambiguous { color: #fbbf24; font-weight: 700; }
-  .tick-knot { color: #60a5fa; font-weight: 700; }
 
-  .stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .stat-card {
-    background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border);
-    border-radius: 14px; padding: 1.25rem; text-align: center;
-  }
-  .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-  .stat-num { font-size: 2.2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin-top: 0.4rem; }
-
-  .status-banner {
-    border-radius: 12px; padding: 1.1rem 1.4rem; font-weight: 600;
+  /* Status Banner */
+  .status-pill {
+    border-radius: var(--radius-md); padding: 1.1rem 1.4rem;
     display: flex; justify-content: space-between; align-items: center;
-    font-size: 0.9rem; margin-bottom: 1.5rem; transition: all 0.3s ease;
+    font-size: 0.88rem; font-weight: 600; margin-bottom: 1.5rem;
   }
-  .status-distinct { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-  .status-breaker { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-  .status-duplicate { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+  .status-tier1 { background: rgba(15, 191, 241, 0.12); color: var(--futux-cyan); border: 1px solid rgba(15, 191, 241, 0.35); }
+  .status-tier2 { background: rgba(255, 145, 77, 0.12); color: var(--futux-orange); border: 1px solid rgba(255, 145, 77, 0.35); }
+  .status-tier3 { background: rgba(16, 185, 129, 0.12); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.35); }
 
-  .trace-card {
-    background: #020617; border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem; overflow-x: auto;
+  /* Trace Code */
+  .code-block {
+    background: #020617; border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md); padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; overflow-x: auto; color: #E2E8F0;
   }
-  .trace-line { padding: 0.25rem 0; color: #cbd5e1; }
-  .trace-highlight { color: #38bdf8; font-weight: 700; }
-  .trace-final { border-top: 1px solid #1e293b; margin-top: 0.5rem; padding-top: 0.5rem; color: #34d399; font-weight: 700; }
+  .code-line { padding: 0.2rem 0; }
+  .code-result { border-top: 1px solid #1E293B; margin-top: 0.5rem; padding-top: 0.5rem; color: var(--futux-cyan); font-weight: 700; }
 
-  footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 3rem; }
-  footer a { color: #a78bfa; text-decoration: none; }
+  /* Filter Tabs & Table */
+  .filter-tabs { display: flex; gap: 0.5rem; }
+  .filter-btn {
+    background: transparent; border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-muted); font-size: 0.72rem; font-weight: 600;
+    padding: 0.35rem 0.75rem; border-radius: 999px; cursor: pointer; transition: all 0.2s;
+  }
+  .filter-btn:hover { color: var(--text-primary); border-color: var(--card-border); }
+  .filter-btn.active { background: rgba(15, 191, 241, 0.15); color: var(--futux-cyan); border-color: var(--futux-cyan); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; }
+  th { background: rgba(11, 53, 65, 0.55); text-align: left; padding: 0.75rem 1rem; color: var(--text-secondary); text-transform: uppercase; font-size: 0.7rem; }
+  td { padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+  tr:hover td { background: rgba(15, 191, 241, 0.03); }
+  .badge-tag { display: inline-block; padding: 0.18rem 0.5rem; border-radius: 4px; font-size: 0.68rem; font-weight: 700; }
+  .badge-tier1 { background: rgba(15, 191, 241, 0.2); color: var(--futux-cyan); border: 1px solid rgba(15, 191, 241, 0.4); }
+  .badge-tier2 { background: rgba(255, 145, 77, 0.2); color: var(--futux-orange); border: 1px solid rgba(255, 145, 77, 0.4); }
+  .badge-tier3 { background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
+
+  .btn-action {
+    background: linear-gradient(135deg, var(--futux-cyan), #0284C7);
+    color: #042F2E; border: none; padding: 0.55rem 1.15rem; border-radius: var(--radius-sm);
+    font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: opacity 0.2s;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .btn-action:hover { opacity: 0.9; }
+  .btn-action.secondary {
+    background: rgba(11, 53, 65, 0.7); color: var(--futux-cyan);
+    border: 1px solid var(--card-border);
+  }
+  .btn-action.secondary:hover { background: rgba(11, 53, 65, 0.95); }
+
+  .column-picker-bar {
+    background: rgba(5, 11, 18, 0.65); border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+    font-size: 0.78rem;
+  }
+  .select-styled {
+    background: #0B3541; color: var(--text-primary); border: 1px solid var(--card-border);
+    padding: 0.35rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace; outline: none;
+  }
+
+  footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 3.5rem; }
+  footer a { color: var(--futux-cyan); text-decoration: none; }
 </style>
 </head>
 <body>
 <div class="container">
   <header>
-    <div class="badge">Interpretable ML & Conformal Prediction</div>
-    <h1>Whitebox-Dedup <span>Playground</span></h1>
-    <p class="subtitle">Experience the auditable MARS equation and Inductive Conformal Prediction (ICP) circuit breaker in real time.</p>
+    <div class="brand-pill">
+      <span class="brand-dot"></span>
+      FutuX Agri-consult &bull; Open-Source ML Infrastructure
+    </div>
+    <h1>Whitebox-Dedup <span class="cyan">ML</span> <span class="orange">Playground</span></h1>
+    <p class="subtitle">Auditable MARS Deduplication &amp; Inductive Conformal Prediction (ICP) Circuit Breaker with 100% Client-Side Dataset Deduplication.</p>
+    
+    <div class="privacy-strip">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div><strong>Complete Privacy Guarantee:</strong> Your dataset never leaves this browser tab. Tokenization, candidate blocking, Jaro-Winkler indexing, and piecewise MARS calculations execute locally on your device.</div>
+    </div>
   </header>
 
-  <div class="glass-card">
-    <div class="slider-box">
-      <div class="slider-header">
-        <span>Candidate Jaro-Winkler Full Name Similarity (JW):</span>
-        <span class="val" id="jw-val">0.750</span>
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="tab-btn-dataset" onclick="switchTab('dataset')">Tab 1: Upload Dataset &amp; Deduplicate</button>
+    <button class="tab-btn" id="tab-btn-slider" onclick="switchTab('slider')">Tab 2: Interactive Circuit Breaker Simulator</button>
+  </div>
+
+  <!-- TAB 1: DATASET DEDUPLICATION -->
+  <div id="tab-dataset">
+    <div class="glass-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 style="font-size: 1.15rem; font-weight: 700;">Upload Beneficiary CSV or Run Preset Roster</h2>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">The ML engine auto-detects name, phone, and ID fields, applies candidate blocking, and evaluates the MARS equation.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-action secondary" onclick="loadSampleRoster()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Load Sample Roster (100 rows)
+          </button>
+          <button class="btn-action" onclick="document.getElementById('file-input').click()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+            Upload CSV
+          </button>
+        </div>
       </div>
-      <input type="range" id="jw-slider" min="0.0" max="1.0" step="0.005" value="0.75" oninput="updateCalculator(this.value)">
-      <div class="ticks">
-        <span>0.000 (Distinct)</span>
-        <span class="tick-ambiguous">0.491 (Ambiguous Zone Begins)</span>
-        <span class="tick-knot">0.898 (Duplicate Transition)</span>
-        <span>1.000 (Exact Match)</span>
+
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        </div>
+        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem;">Click to upload or drag &amp; drop any CSV file</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">Works with any column schema (NIN, farmer roster, voter rolls, credit applicants)</div>
+        <input type="file" id="file-input" accept=".csv" style="display: none;" onchange="handleCSVUpload(event)">
+      </div>
+
+      <div id="col-picker-container" class="column-picker-bar" style="display: none;">
+        <div>
+          <span style="color: var(--text-muted); margin-right: 0.5rem;">Target Name Field:</span>
+          <select id="col-name-select" class="select-styled" onchange="recalculateOnColumnChange()"></select>
+        </div>
+        <div id="file-meta" style="color: var(--futux-cyan); font-family: 'JetBrains Mono', monospace;">
+          Parsed: 0 rows
+        </div>
       </div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Calculated Logit</div>
-        <div class="stat-num" id="stat-logit">-0.542</div>
+    <!-- Results Section -->
+    <div id="results-section" style="display: none;">
+      <div class="grid-stats">
+        <div class="stat-card">
+          <div class="stat-label">Evaluated Records</div>
+          <div class="stat-num" id="stat-records">100</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);" id="stat-pairs">Candidate pairs: 45</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tier 1: Auto-Merge</div>
+          <div class="stat-num tier1" id="stat-tier1">8</div>
+          <div style="font-size: 0.72rem; color: var(--futux-cyan);">Definite Duplicates (P &ge; 0.898)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tier 2: Circuit Breaker</div>
+          <div class="stat-num tier2" id="stat-tier2">4</div>
+          <div style="font-size: 0.72rem; color: var(--futux-orange);">Human Review Required</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tier 3: Auto-Distinct</div>
+          <div class="stat-num tier3" id="stat-tier3">33</div>
+          <div style="font-size: 0.72rem; color: var(--emerald);">Confirmed Distinct (P &lt; 0.491)</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Duplicate Probability P(dup)</div>
-        <div class="stat-num" style="color: #a78bfa;" id="stat-prob">36.77%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Conformal Prediction Set</div>
-        <div class="stat-num" style="color: #fbbf24;" id="stat-set">{0, 1}</div>
+
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 700;">Deduplication Results &amp; Audit Trail</h3>
+            <div class="filter-tabs">
+              <button class="filter-btn active" onclick="filterResults('all', this)">All Pairs</button>
+              <button class="filter-btn" onclick="filterResults('tier1', this)">Tier 1 Merge</button>
+              <button class="filter-btn" onclick="filterResults('tier2', this)">Tier 2 Review</button>
+              <button class="filter-btn" onclick="filterResults('tier3', this)">Tier 3 Distinct</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-action secondary" onclick="exportResultsCSV()">Download CSV</button>
+            <button class="btn-action" onclick="exportResultsJSON()">Download JSON</button>
+          </div>
+        </div>
+        <div style="max-height: 440px; overflow-y: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Record A</th>
+                <th>Record B</th>
+                <th>JW Score</th>
+                <th>MARS Probability</th>
+                <th>Auditable Equation Reason</th>
+              </tr>
+            </thead>
+            <tbody id="dedup-table-body">
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div id="status-badge" class="status-banner status-breaker">
-      <div id="status-text">Tier 2: STATUTORY SAFEGUARD TRIGGERED &mdash; Human Review Required</div>
-      <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;" id="status-cov">Coverage: Ambiguous Zone</div>
-    </div>
-
-    <div>
-      <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
-        Mathematical Arithmetic Trace (Spreadsheet-Readable)
+  <!-- TAB 2: INTERACTIVE SLIDER -->
+  <div id="tab-slider" style="display: none;">
+    <div class="glass-card">
+      <div class="slider-card">
+        <div class="slider-top">
+          <span style="font-weight: 600; font-size: 0.9rem;">Candidate Jaro-Winkler Full Name Similarity (JW):</span>
+          <span class="slider-val" id="jw-val">0.750</span>
+        </div>
+        <input type="range" id="jw-slider" min="0.0" max="1.0" step="0.005" value="0.75" oninput="runSliderEval(this.value)">
+        <div class="slider-ticks">
+          <span>0.000 (Distinct)</span>
+          <span style="color: var(--futux-orange); font-weight: 700;">0.491 (Circuit Breaker Threshold)</span>
+          <span style="color: var(--futux-cyan); font-weight: 700;">0.898 (Duplicate Knot)</span>
+          <span>1.000 (Exact Match)</span>
+        </div>
       </div>
-      <div class="trace-card">
-        <div class="trace-line">logit = -102.231 (intercept)</div>
-        <div class="trace-line" id="trace-h1">&nbsp; + 562.965 * max(0, 0.750 - 0.559) = +107.526</div>
-        <div class="trace-line" id="trace-h2">&nbsp; - 679.490 * max(0, 0.750 - 0.806) = 0.000</div>
-        <div class="trace-line" id="trace-h3">&nbsp; +  96.830 * max(0, 0.898 - 0.750) = +14.331</div>
-        <div class="trace-line" id="trace-h4">&nbsp; + 122.623 * max(0, 0.750 - 0.898) = 0.000</div>
-        <div class="trace-final" id="trace-total">
-          &nbsp;= -0.542 &rarr; P(duplicate) = 1 / (1 + exp(-(-0.542))) = 0.3677
+
+      <div class="grid-stats">
+        <div class="stat-card">
+          <div class="stat-label">Calculated Logit</div>
+          <div class="stat-num" id="stat-logit">-0.542</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Duplicate Probability P(dup)</div>
+          <div class="stat-num" style="color: var(--futux-cyan);" id="stat-prob">36.77%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Conformal Prediction Set</div>
+          <div class="stat-num" style="color: var(--futux-orange);" id="stat-set">{0, 1}</div>
+        </div>
+      </div>
+
+      <div id="status-badge" class="status-pill status-tier2">
+        <div id="status-text">Tier 2: STATUTORY SAFEGUARD TRIGGERED &mdash; Human Review Required</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;" id="status-cov">Prediction Set: {0, 1} [Ambiguous]</div>
+      </div>
+
+      <div>
+        <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+          Auditable MARS Equation Arithmetic Trace (Spreadsheet-Readable)
+        </div>
+        <div class="code-block">
+          <div class="code-line">logit = -102.231 (intercept)</div>
+          <div class="code-line" id="trace-h1">&nbsp; + 562.965 * max(0, 0.750 - 0.559) = +107.526</div>
+          <div class="code-line" id="trace-h2">&nbsp; - 679.490 * max(0, 0.750 - 0.806) = 0.000</div>
+          <div class="code-line" id="trace-h3">&nbsp; +  96.830 * max(0, 0.898 - 0.750) = +14.331</div>
+          <div class="code-line" id="trace-h4">&nbsp; + 122.623 * max(0, 0.750 - 0.898) = 0.000</div>
+          <div class="code-result" id="trace-total">
+            &nbsp;= -0.542 &rarr; P(duplicate) = 1 / (1 + exp(-(-0.542))) = 0.3677
+          </div>
         </div>
       </div>
     </div>
@@ -175,28 +392,63 @@
 
   <footer>
     <p>Maintained by <strong>Daniel Olagunju</strong> (<a href="mailto:d.olagunju@futuxconsult.com">d.olagunju@futuxconsult.com</a>) &amp; <strong>Temitope Olarewaju</strong> (<a href="mailto:t.olarewaju@futuxconsult.com">t.olarewaju@futuxconsult.com</a>)</p>
-    <p style="margin-top: 0.3rem;">FutuX Agri-consult Limited &bull; Released under MIT License &bull; <a href="https://github.com/todak2000/whitebox-dedup-ml" target="_blank">GitHub Repository</a></p>
+    <p style="margin-top: 0.35rem;">FutuX Agri-consult Limited &bull; Released under MIT License &bull; <a href="https://github.com/todak2000/whitebox-dedup-ml" target="_blank">GitHub Repository</a></p>
   </footer>
 </div>
 
 <script>
-function updateCalculator(valStr) {
-  const jw = parseFloat(valStr);
-  document.getElementById("jw-val").innerText = jw.toFixed(3);
+// --- Pure JavaScript Jaro-Winkler implementation ---
+function jaroWinkler(s1, s2) {
+  if (s1 === s2) return 1.0;
+  const len1 = s1.length, len2 = s2.length;
+  if (len1 === 0 || len2 === 0) return 0.0;
+  const matchDist = Math.floor(Math.max(len1, len2) / 2) - 1;
+  const s1M = new Array(len1).fill(false), s2M = new Array(len2).fill(false);
+  let matches = 0;
+  for (let i = 0; i < len1; i++) {
+    const start = Math.max(0, i - matchDist), end = Math.min(i + matchDist + 1, len2);
+    for (let j = start; j < end; j++) {
+      if (s2M[j] || s1[i] !== s2[j]) continue;
+      s1M[i] = true; s2M[j] = true; matches++; break;
+    }
+  }
+  if (matches === 0) return 0.0;
+  let trans = 0, k = 0;
+  for (let i = 0; i < len1; i++) {
+    if (!s1M[i]) continue;
+    while (!s2M[k]) k++;
+    if (s1[i] !== s2[k]) trans++;
+    k++;
+  }
+  const jaro = (matches / len1 + matches / len2 + (matches - trans / 2) / matches) / 3;
+  let prefix = 0;
+  for (let i = 0; i < Math.min(4, Math.min(len1, len2)); i++) {
+    if (s1[i] === s2[i]) prefix++; else break;
+  }
+  return jaro + prefix * 0.1 * (1 - jaro);
+}
 
+// --- MARS Scorer ---
+function scoreMARS(jw) {
   const h1 = 562.965 * Math.max(0, jw - 0.559);
   const h2 = -679.490 * Math.max(0, jw - 0.806);
   const h3 = 96.830 * Math.max(0, 0.898 - jw);
   const h4 = 122.623 * Math.max(0, jw - 0.898);
   const logit = -102.231 + h1 + h2 + h3 + h4;
-
   let prob = 0.0;
   if (logit >= 50.0) prob = 1.0;
   else if (logit <= -50.0) prob = 0.0;
   else prob = 1.0 / (1.0 + Math.exp(-logit));
+  return { logit, prob, h1, h2, h3, h4 };
+}
 
-  document.getElementById("stat-logit").innerText = logit.toFixed(3);
-  document.getElementById("stat-prob").innerText = (prob * 100).toFixed(2) + "%";
+function runSliderEval(valStr) {
+  const jw = parseFloat(valStr);
+  document.getElementById("jw-val").innerText = jw.toFixed(3);
+  const res = scoreMARS(jw);
+
+  document.getElementById("stat-logit").innerText = res.logit.toFixed(3);
+  document.getElementById("stat-prob").innerText = (res.prob * 100).toFixed(2) + "%";
 
   const badge = document.getElementById("status-badge");
   const text = document.getElementById("status-text");
@@ -204,33 +456,257 @@ function updateCalculator(valStr) {
   const setEl = document.getElementById("stat-set");
 
   if (jw < 0.491) {
-    badge.className = "status-banner status-distinct";
+    badge.className = "status-pill status-tier3";
     text.innerText = "Tier 3: Auto-Distinct (Automated Statistical Certainty)";
-    cov.innerText = "Conformal Set: {0} (Distinct)";
+    cov.innerText = "Prediction Set: {0} [Distinct]";
     setEl.innerText = "{0}";
-    setEl.style.color = "#34d399";
+    setEl.style.color = "var(--emerald)";
   } else if (jw > 0.898) {
-    badge.className = "status-banner status-duplicate";
+    badge.className = "status-pill status-tier1";
     text.innerText = "Tier 1: Auto-Merge Duplicate (Automated Statistical Certainty)";
-    cov.innerText = "Conformal Set: {1} (Duplicate)";
+    cov.innerText = "Prediction Set: {1} [Duplicate]";
     setEl.innerText = "{1}";
-    setEl.style.color = "#60a5fa";
+    setEl.style.color = "var(--futux-cyan)";
   } else {
-    badge.className = "status-banner status-breaker";
+    badge.className = "status-pill status-tier2";
     text.innerText = "Tier 2: STATUTORY SAFEGUARD TRIGGERED — Human Review Required";
-    cov.innerText = "Conformal Set: {0, 1} (Ambiguous)";
+    cov.innerText = "Prediction Set: {0, 1} [Ambiguous]";
     setEl.innerText = "{0, 1}";
-    setEl.style.color = "#fbbf24";
+    setEl.style.color = "var(--futux-orange)";
   }
 
-  document.getElementById("trace-h1").innerText = `  + 562.965 * max(0, ${jw.toFixed(3)} - 0.559) = +${h1.toFixed(3)}`;
-  document.getElementById("trace-h2").innerText = `  - 679.490 * max(0, ${jw.toFixed(3)} - 0.806) = ${h2.toFixed(3)}`;
-  document.getElementById("trace-h3").innerText = `  +  96.830 * max(0, 0.898 - ${jw.toFixed(3)}) = +${h3.toFixed(3)}`;
-  document.getElementById("trace-h4").innerText = `  + 122.623 * max(0, ${jw.toFixed(3)} - 0.898) = +${h4.toFixed(3)}`;
-  document.getElementById("trace-total").innerText = `  = ${logit.toFixed(3)} → P(duplicate) = 1 / (1 + exp(-(${logit.toFixed(3)}))) = ${prob.toFixed(4)}`;
+  document.getElementById("trace-h1").innerText = `  + 562.965 * max(0, ${jw.toFixed(3)} - 0.559) = +${res.h1.toFixed(3)}`;
+  document.getElementById("trace-h2").innerText = `  - 679.490 * max(0, ${jw.toFixed(3)} - 0.806) = ${res.h2.toFixed(3)}`;
+  document.getElementById("trace-h3").innerText = `  +  96.830 * max(0, 0.898 - ${jw.toFixed(3)}) = +${res.h3.toFixed(3)}`;
+  document.getElementById("trace-h4").innerText = `  + 122.623 * max(0, ${jw.toFixed(3)} - 0.898) = +${res.h4.toFixed(3)}`;
+  document.getElementById("trace-total").innerText = `  = ${res.logit.toFixed(3)} → P(duplicate) = 1 / (1 + exp(-(${res.logit.toFixed(3)}))) = ${res.prob.toFixed(4)}`;
 }
 
-updateCalculator(0.75);
+let loadedRecords = [];
+let activeResultFilter = 'all';
+let lastDeduplicationResults = null;
+
+// Drag & drop support
+const dropzone = document.getElementById("dropzone");
+['dragenter', 'dragover'].forEach(eventName => {
+  dropzone.addEventListener(eventName, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); }, false);
+});
+['dragleave', 'drop'].forEach(eventName => {
+  dropzone.addEventListener(eventName, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); }, false);
+});
+dropzone.addEventListener('drop', (e) => {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  if (files.length) parseClientCSV(files[0]);
+});
+
+function handleCSVUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  parseClientCSV(file);
+}
+
+function parseClientCSV(file) {
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      if (results.data && results.data.length > 0) {
+        loadedRecords = results.data;
+        populateColumnPicker(results.data, file.name);
+        processDatasetRecords(results.data);
+      }
+    }
+  });
+}
+
+function populateColumnPicker(records, filename) {
+  const cols = Object.keys(records[0] || {});
+  const select = document.getElementById("col-name-select");
+  select.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join("");
+  
+  const detected = cols.find(c => /name|farmer|full_name|beneficiary/i.test(c)) || cols[0];
+  select.value = detected;
+
+  document.getElementById("col-picker-container").style.display = "flex";
+  document.getElementById("file-meta").innerText = `${filename || 'Dataset'}: ${records.length} records`;
+}
+
+function recalculateOnColumnChange() {
+  if (loadedRecords.length > 0) {
+    const chosenNameCol = document.getElementById("col-name-select").value;
+    processDatasetRecords(loadedRecords, chosenNameCol);
+  }
+}
+
+// --- Dataset Deduplication Engine ---
+function processDatasetRecords(records, overrideNameCol) {
+  const cols = Object.keys(records[0] || {});
+  const nameCol = overrideNameCol || cols.find(c => /name|farmer|full_name|beneficiary/i.test(c)) || cols[1] || cols[0];
+
+  // Inverted index blocking on first 2 letters
+  const blocks = {};
+  records.forEach((r, idx) => {
+    const raw = String(r[nameCol] || "").trim().toLowerCase();
+    const token = raw.split(/\s+/)[0] || "";
+    const key = token.slice(0, 2) || "_";
+    if (!blocks[key]) blocks[key] = [];
+    blocks[key].push({ idx, name: raw, fullRecord: r });
+  });
+
+  const pairs = [];
+  const evaluatedPairs = new Set();
+  
+  for (const block of Object.values(blocks)) {
+    if (block.length > 1) {
+      for (let i = 0; i < block.length; i++) {
+        for (let j = i + 1; j < block.length; j++) {
+          const a = block[i], b = block[j];
+          const pairKey = a.idx < b.idx ? `${a.idx}-${b.idx}` : `${b.idx}-${a.idx}`;
+          if (evaluatedPairs.has(pairKey)) continue;
+          evaluatedPairs.add(pairKey);
+
+          const jw = jaroWinkler(a.name, b.name);
+          const mars = scoreMARS(jw);
+
+          let tier = 'tier3';
+          let reason = `mars:high_confidence_distinct(p=${mars.prob.toFixed(3)})`;
+
+          if (jw >= 0.898) {
+            tier = 'tier1';
+            reason = `mars:high_confidence_duplicate(p=${mars.prob.toFixed(3)})`;
+          } else if (jw >= 0.491) {
+            tier = 'tier2';
+            reason = `circuit_breaker:ambiguous_region(p=${mars.prob.toFixed(3)})`;
+          }
+
+          pairs.push({
+            indexA: a.idx,
+            indexB: b.idx,
+            nameA: a.fullRecord[nameCol],
+            nameB: b.fullRecord[nameCol],
+            jw: jw,
+            probability: mars.prob,
+            tier: tier,
+            reason: reason,
+          });
+        }
+      }
+    }
+  }
+
+  const t1 = pairs.filter(p => p.tier === 'tier1').length;
+  const t2 = pairs.filter(p => p.tier === 'tier2').length;
+  const t3 = pairs.filter(p => p.tier === 'tier3').length;
+
+  lastDeduplicationResults = {
+    totalRecords: records.length,
+    candidatePairs: pairs.length,
+    tier1: t1,
+    tier2: t2,
+    tier3: t3,
+    pairs: pairs.sort((x, y) => y.probability - x.probability),
+  };
+
+  renderDedupResults(lastDeduplicationResults);
+}
+
+function renderDedupResults(res) {
+  document.getElementById("results-section").style.display = "block";
+  document.getElementById("stat-records").innerText = res.totalRecords;
+  document.getElementById("stat-pairs").innerText = `Candidate pairs evaluated: ${res.candidatePairs}`;
+  document.getElementById("stat-tier1").innerText = res.tier1;
+  document.getElementById("stat-tier2").innerText = res.tier2;
+  document.getElementById("stat-tier3").innerText = res.tier3;
+
+  renderDedupTable();
+}
+
+function renderDedupTable() {
+  if (!lastDeduplicationResults) return;
+  const tbody = document.getElementById("dedup-table-body");
+  const filtered = activeResultFilter === 'all'
+    ? lastDeduplicationResults.pairs
+    : lastDeduplicationResults.pairs.filter(p => p.tier === activeResultFilter);
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--emerald); padding: 2.5rem;">No pairs matching this filter category.</td></tr>';
+  } else {
+    tbody.innerHTML = filtered.slice(0, 150).map(p => `
+      <tr>
+        <td><span class="badge-tag badge-${p.tier}">${p.tier === 'tier1' ? 'Tier 1 Auto-Merge' : p.tier === 'tier2' ? 'Tier 2 Review' : 'Tier 3 Distinct'}</span></td>
+        <td><strong>#${p.indexA + 1}</strong>: ${p.nameA}</td>
+        <td><strong>#${p.indexB + 1}</strong>: ${p.nameB}</td>
+        <td>${p.jw.toFixed(4)}</td>
+        <td style="color: ${p.probability > 0.8 ? 'var(--futux-cyan)' : p.probability > 0.4 ? 'var(--futux-orange)' : 'var(--text-muted)'}; font-weight: 700;">${(p.probability * 100).toFixed(1)}%</td>
+        <td>${p.reason}</td>
+      </tr>
+    `).join("");
+  }
+}
+
+function filterResults(tier, btn) {
+  activeResultFilter = tier;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderDedupTable();
+}
+
+function loadSampleRoster() {
+  const sample = [
+    { farmer_id: "FMR-001", full_name: "Aminu Kano", phone: "+2348012345678", state: "Kano" },
+    { farmer_id: "FMR-002", full_name: "Aminnu Kano", phone: "+2348012345678", state: "Kano" },
+    { farmer_id: "FMR-003", full_name: "Aminu Kanu", phone: "+2348012345678", state: "Kano" },
+    { farmer_id: "FMR-004", full_name: "Bello Abubakar", phone: "+2348099887766", state: "Kaduna" },
+    { farmer_id: "FMR-005", full_name: "Bello Abubakr", phone: "+2348099887766", state: "Kaduna" },
+    { farmer_id: "FMR-006", full_name: "Fatima Ibrahim", phone: "+2347011223344", state: "Sokoto" },
+    { farmer_id: "FMR-007", full_name: "Zainab Waziri", phone: "+2348055667788", state: "Katsina" },
+    { farmer_id: "FMR-008", full_name: "Musa Garba", phone: "+2348022334455", state: "Bauchi" },
+    { farmer_id: "FMR-009", full_name: "Musa Garbaa", phone: "+2348022334455", state: "Bauchi" },
+    { farmer_id: "FMR-010", full_name: "Ibrahim Yakubu", phone: "+2347088990011", state: "Jigawa" }
+  ];
+  const full = [];
+  for (let i = 0; i < 10; i++) {
+    sample.forEach((s, idx) => full.push({ ...s, farmer_id: `FMR-${i * 10 + idx + 1}` }));
+  }
+  loadedRecords = full;
+  populateColumnPicker(full, "sample_farmer_roster.csv");
+  processDatasetRecords(full);
+}
+
+function exportResultsJSON() {
+  if (!lastDeduplicationResults) return;
+  const blob = new Blob([JSON.stringify(lastDeduplicationResults, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `whitebox_dedup_results_${Date.now()}.json`;
+  a.click();
+}
+
+function exportResultsCSV() {
+  if (!lastDeduplicationResults || !lastDeduplicationResults.pairs) return;
+  const header = "tier,index_a,record_a,index_b,record_b,jw_score,probability,decision_reason\n";
+  const rows = lastDeduplicationResults.pairs.map(p => 
+    `"${p.tier}",${p.indexA + 1},"${p.nameA.replace(/"/g, '""')}",${p.indexB + 1},"${p.nameB.replace(/"/g, '""')}",${p.jw.toFixed(4)},${p.probability.toFixed(4)},"${p.reason}"`
+  ).join("\n");
+  const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `whitebox_dedup_results_${Date.now()}.csv`;
+  a.click();
+}
+
+function switchTab(t) {
+  document.getElementById("tab-dataset").style.display = t === 'dataset' ? 'block' : 'none';
+  document.getElementById("tab-slider").style.display = t === 'slider' ? 'block' : 'none';
+  document.getElementById("tab-btn-dataset").classList.toggle("active", t === 'dataset');
+  document.getElementById("tab-btn-slider").classList.toggle("active", t === 'slider');
+}
+
+// Init slider
+runSliderEval(0.75);
 </script>
 </body>
 </html>
