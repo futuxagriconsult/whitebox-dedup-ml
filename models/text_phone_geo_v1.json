@@ -1,0 +1,14 @@
+{
+  "model_name": "text_phone_geo_v1",
+  "description": "West African smallholder agricultural roster deduplication using Jaro-Winkler name similarity, exact phone concordance, and Haversine geospatial proximity.",
+  "training_context": "West African smallholder farmer registries with field GPS coordinates and primary contact phone numbers.",
+  "required_features": ["jw_name_full", "exact_phone", "haversine_m"],
+  "intercept": -90.0,
+  "hinges": [
+    {"feature": "jw_name_full", "coefficient": 450.0,  "knot": 0.550, "reflected": false},
+    {"feature": "jw_name_full", "coefficient": -550.0, "knot": 0.800, "reflected": false},
+    {"feature": "jw_name_full", "coefficient": 80.0,   "knot": 0.890, "reflected": true},
+    {"feature": "exact_phone",   "coefficient": 15.0,   "knot": 0.500, "reflected": false},
+    {"feature": "haversine_m",   "coefficient": 12.0,   "knot": 100.0, "reflected": true}
+  ]
+}

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "whitebox-dedup"
+version = "0.1.0"
+description = "Interpretable entity deduplication with auditable MARS equations and conformal prediction"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+  { name = "Daniel Olagunju", email = "todak2000@gmail.com" },
+  { name = "Temitope Olarewaju", email = "temitope@futuxconsult.com" },
+]
+keywords = ["deduplication", "entity resolution", "MARS", "conformal prediction", "data governance", "Africa"]
+dependencies = [
+  "pandas>=2.0",
+  "jellyfish>=1.0",
+  "pyyaml>=6.0",
+]
+
+[project.scripts]
+wdedup = "whitebox_dedup.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-cov", "faker>=24.0", "ruff"]
+train = ["scikit-learn>=1.4", "numpy>=1.26"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["whitebox_dedup"]

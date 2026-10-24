@@ -1,0 +1,13 @@
+{
+  "model_name": "text_only_v1",
+  "description": "West African naming pool deduplication using Jaro-Winkler full name similarity only. Trained on 3,598 labelled candidate pairs from 12 agricultural programmes in Nigeria (FutuX Agri-consult Limited, 2021-2026). Training data is private; only these weights are published.",
+  "training_context": "West African naming pools (northern Nigeria). Patronymic naming structures. Shannon entropy H=10.355 bits for given names. Calibrated for populations where same-name collision rate is elevated.",
+  "required_features": ["jw_name_full"],
+  "intercept": -102.231,
+  "hinges": [
+    {"feature": "jw_name_full", "coefficient": 562.965,  "knot": 0.559, "reflected": false},
+    {"feature": "jw_name_full", "coefficient": -679.490, "knot": 0.806, "reflected": false},
+    {"feature": "jw_name_full", "coefficient": 96.830,   "knot": 0.898, "reflected": true},
+    {"feature": "jw_name_full", "coefficient": 122.623,  "knot": 0.898, "reflected": false}
+  ]
+}

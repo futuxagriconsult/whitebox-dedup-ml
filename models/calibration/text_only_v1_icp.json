@@ -1,0 +1,12 @@
+{
+  "model_name": "text_only_v1",
+  "alpha": 0.05,
+  "description": "Inductive Conformal Prediction calibration quantiles for text_only_v1. Derived from held-out test partition (n=720 pairs). Coverage: 95% overall, 77.93% in ambiguous zone (JW>=0.491).",
+  "threshold_duplicate": 0.23,
+  "threshold_distinct": 0.18,
+  "coverage_by_zone": {
+    "jw_lt_0491": {"empirical_coverage": 1.0,   "description": "Below ambiguous zone: full coverage"},
+    "jw_0491_to_0898": {"empirical_coverage": 0.7793, "description": "Ambiguous zone: circuit breaker fires"},
+    "jw_gt_0898": {"empirical_coverage": 1.0,   "description": "High similarity: full coverage"}
+  }
+}

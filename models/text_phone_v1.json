@@ -1,0 +1,14 @@
+{
+  "model_name": "text_phone_v1",
+  "description": "West African mobile and beneficiary deduplication using Jaro-Winkler full name similarity and normalized exact phone match concordance.",
+  "training_context": "West African social protection and credit applicant pools. Patronymic naming structures with mobile phone concordance validation.",
+  "required_features": ["jw_name_full", "exact_phone"],
+  "intercept": -95.0,
+  "hinges": [
+    {"feature": "jw_name_full", "coefficient": 480.0,  "knot": 0.550, "reflected": false},
+    {"feature": "jw_name_full", "coefficient": -580.0, "knot": 0.800, "reflected": false},
+    {"feature": "jw_name_full", "coefficient": 85.0,   "knot": 0.890, "reflected": true},
+    {"feature": "jw_name_full", "coefficient": 115.0,  "knot": 0.890, "reflected": false},
+    {"feature": "exact_phone",   "coefficient": 18.5,   "knot": 0.500, "reflected": false}
+  ]
+}

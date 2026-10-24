@@ -1,0 +1,12 @@
+{
+  "model_name": "text_phone_geo_v1",
+  "alpha": 0.05,
+  "description": "Inductive Conformal Prediction calibration quantiles for text_phone_geo_v1. Coverage: 95% overall.",
+  "threshold_duplicate": 0.18,
+  "threshold_distinct": 0.15,
+  "coverage_by_zone": {
+    "low_similarity": {"empirical_coverage": 1.0, "description": "Below ambiguous zone: full coverage"},
+    "ambiguous_zone": {"empirical_coverage": 0.835, "description": "Ambiguous zone: circuit breaker triggers human review"},
+    "high_similarity": {"empirical_coverage": 1.0, "description": "High concordance: full coverage"}
+  }
+}
