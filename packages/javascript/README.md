@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@futux/whitebox-dedup.svg?color=0B3541&logo=npm&logoColor=white)](https://www.npmjs.com/package/@futux/whitebox-dedup)
 [![npm downloads](https://img.shields.io/npm/dm/@futux/whitebox-dedup.svg)](https://www.npmjs.com/package/@futux/whitebox-dedup)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23612975.svg)](https://doi.org/10.5281/zenodo.23612975)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Live Web Demo](https://img.shields.io/badge/Interactive_Playground-Live_Online-0FBFF1?style=flat&logo=google-chrome&logoColor=white)](https://futuxagriconsult.github.io/whitebox-dedup-ml/)
 

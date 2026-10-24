@@ -3,6 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/whitebox-dedup.svg?color=0FBFF1&logo=pypi&logoColor=white)](https://pypi.org/project/whitebox-dedup/)
 [![npm version](https://img.shields.io/npm/v/@futux/whitebox-dedup.svg?color=0B3541&logo=npm&logoColor=white)](https://www.npmjs.com/package/@futux/whitebox-dedup)
 [![Python Versions](https://img.shields.io/pypi/pyversions/whitebox-dedup.svg)](https://pypi.org/project/whitebox-dedup/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23612975.svg)](https://doi.org/10.5281/zenodo.23612975)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Live Web Demo](https://img.shields.io/badge/Interactive_Playground-Live_Online-0FBFF1?style=flat&logo=google-chrome&logoColor=white)](https://futuxagriconsult.github.io/whitebox-dedup-ml/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/futuxagriconsult/whitebox-dedup-ml/blob/main/CONTRIBUTING.md)
@@ -152,8 +153,9 @@ If you use Whitebox-Dedup in academic research, conference publications, or DPI 
   author = {FutuX Agri-consult Limited},
   title = {Whitebox-Dedup: Interpretable Entity Deduplication with Auditable MARS Equations and Conformal Prediction},
   year = {2026},
-  publisher = {GitHub},
-  journal = {GitHub repository},
+  publisher = {Zenodo},
+  doi = {10.5281/zenodo.23612975},
+  url = {https://doi.org/10.5281/zenodo.23612975},
   howpublished = {\url{https://github.com/futuxagriconsult/whitebox-dedup-ml}}
 }
 ```
