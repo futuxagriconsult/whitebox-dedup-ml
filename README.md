@@ -1,5 +1,10 @@
 # whitebox-dedup
 
+[![PyPI version](https://img.shields.io/pypi/v/whitebox-dedup.svg?color=0FBFF1)](https://pypi.org/project/whitebox-dedup/)
+[![npm version](https://img.shields.io/npm/v/@futux/whitebox-dedup.svg?color=0B3541)](https://www.npmjs.com/package/@futux/whitebox-dedup)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Playground](https://img.shields.io/badge/Live_Playground-GitHub_Pages-brightgreen.svg)](https://futuxagriconsult.github.io/whitebox-dedup-ml/)
+
 Interpretable entity deduplication using auditable MARS equations and Inductive Conformal Prediction, with a flexible feature registry that adapts to whatever columns the data has.
 
 ---
