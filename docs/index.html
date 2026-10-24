@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,224 +10,302 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root {
+    /* Brand Foundation */
     --futux-petrol: #0B3541;
     --futux-cyan: #0FBFF1;
     --futux-orange: #FF914D;
-    --bg-dark: #050B12;
-    --card-bg: rgba(11, 53, 65, 0.25);
-    --card-surface: rgba(7, 23, 31, 0.72);
-    --card-border: rgba(15, 191, 241, 0.16);
-    --card-border-glow: rgba(15, 191, 241, 0.42);
+    --emerald: #10B981;
+
+    /* Light Theme (Minimalist Clean White) */
+    --bg: #FFFFFF;
+    --bg-alt: #F8FAFC;
+    --card-bg: #FFFFFF;
+    --card-surface: #F8FAFC;
+    --card-border: #E2E8F0;
+    --card-border-hover: #CBD5E1;
+    --text-primary: #0B3541;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --accent-primary: #0284C7;
+    --badge-bg: rgba(11, 53, 65, 0.05);
+    --badge-border: rgba(11, 53, 65, 0.15);
+    --badge-text: #0B3541;
+    --dropzone-bg: #F8FAFC;
+    --dropzone-border: #CBD5E1;
+    --dropzone-hover: #F0F9FF;
+    --table-header: #F1F5F9;
+    --table-row-hover: #F8FAFC;
+    --table-border: #E2E8F0;
+    --code-bg: #F8FAFC;
+    --code-border: #E2E8F0;
+    --code-text: #0F172A;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  [data-theme="dark"] {
+    /* Dark Theme (Pure Black minimalist) */
+    --bg: #000000;
+    --bg-alt: #080D14;
+    --card-bg: #0A1017;
+    --card-surface: #0E1622;
+    --card-border: #1E293B;
+    --card-border-hover: rgba(15, 191, 241, 0.4);
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
-    --emerald: #10B981;
-    --emerald-glow: rgba(16, 185, 129, 0.25);
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
+    --accent-primary: #0FBFF1;
+    --badge-bg: rgba(15, 191, 241, 0.08);
+    --badge-border: rgba(15, 191, 241, 0.2);
+    --badge-text: #0FBFF1;
+    --dropzone-bg: #070C12;
+    --dropzone-border: #1E293B;
+    --dropzone-hover: rgba(15, 191, 241, 0.06);
+    --table-header: #0E1622;
+    --table-row-hover: rgba(15, 191, 241, 0.03);
+    --table-border: #1E293B;
+    --code-bg: #050B12;
+    --code-border: #1E293B;
+    --code-text: #E2E8F0;
+    --shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
   }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    background-color: var(--bg-dark);
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(15, 191, 241, 0.14) 0px, transparent 55%),
-      radial-gradient(at 100% 0%, rgba(255, 145, 77, 0.09) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(11, 53, 65, 0.45) 0px, transparent 65%);
+    background-color: var(--bg);
     color: var(--text-primary);
     min-height: 100vh;
     padding: 2.5rem 1.25rem;
     line-height: 1.5;
+    transition: background-color 0.2s ease, color 0.2s ease;
     -webkit-font-smoothing: antialiased;
   }
-  .container { max-width: 1200px; margin: 0 auto; }
-  
-  header { text-align: center; margin-bottom: 2.25rem; }
-  .brand-pill {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.38rem 0.95rem; border-radius: 999px;
-    background: rgba(15, 191, 241, 0.08); border: 1px solid var(--card-border);
-    color: var(--futux-cyan); font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+  .container { max-width: 1180px; margin: 0 auto; }
+
+  /* Navigation Bar */
+  .top-nav {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;
+    padding-bottom: 1.25rem; border-bottom: 1px solid var(--card-border);
   }
-  .brand-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--futux-orange); box-shadow: 0 0 8px var(--futux-orange); }
-  h1 { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  .brand-group { display: flex; align-items: center; gap: 0.75rem; }
+  .brand-logo-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--futux-petrol); display: flex; align-items: center; justify-content: center;
+    color: var(--futux-cyan); font-weight: 800; font-size: 0.95rem; font-family: 'JetBrains Mono', monospace;
+  }
+  [data-theme="dark"] .brand-logo-mark {
+    background: #0B3541; border: 1px solid var(--futux-cyan);
+  }
+  .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+  .brand-tag {
+    font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 999px;
+    background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--badge-text);
+  }
+
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    color: var(--text-secondary); padding: 0.45rem 0.85rem; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .theme-toggle:hover { color: var(--text-primary); border-color: var(--card-border-hover); }
+
+  /* Hero Section */
+  .hero { text-align: left; margin-bottom: 2rem; }
+  h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.4rem; line-height: 1.15; }
   h1 span.cyan { color: var(--futux-cyan); }
   h1 span.orange { color: var(--futux-orange); }
-  p.subtitle { color: var(--text-secondary); font-size: 1rem; max-width: 680px; margin: 0 auto; }
-  
-  .privacy-strip {
-    margin: 1.5rem auto 0; max-width: 780px;
-    background: rgba(11, 53, 65, 0.4); border: 1px solid var(--card-border);
-    border-radius: var(--radius-md); padding: 0.85rem 1.25rem;
-    display: flex; align-items: center; gap: 0.75rem; text-align: left;
-    font-size: 0.8rem; color: #BAE6FD;
-  }
-  .privacy-strip strong { color: #F8FAFC; }
+  p.subtitle { color: var(--text-secondary); font-size: 1rem; max-width: 720px; }
 
+  .privacy-strip {
+    margin: 1.25rem 0 0;
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); padding: 0.75rem 1.1rem;
+    display: flex; align-items: center; gap: 0.65rem; font-size: 0.82rem; color: var(--text-secondary);
+  }
+  .privacy-strip strong { color: var(--text-primary); }
+
+  /* Tab Navigation */
   .nav-tabs {
-    display: flex; justify-content: center; gap: 0.75rem; margin: 2rem 0 1.5rem;
+    display: flex; gap: 0.5rem; margin: 1.75rem 0 1.5rem;
   }
   .tab-btn {
-    background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--text-secondary); padding: 0.65rem 1.4rem; border-radius: 999px;
-    font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    color: var(--text-secondary); padding: 0.55rem 1.2rem; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
-  .tab-btn:hover { background: rgba(15, 191, 241, 0.12); color: var(--text-primary); border-color: var(--card-border); }
+  .tab-btn:hover { color: var(--text-primary); border-color: var(--card-border-hover); }
   .tab-btn.active {
-    background: linear-gradient(135deg, rgba(15, 191, 241, 0.25), rgba(11, 53, 65, 0.8));
-    color: var(--futux-cyan); border-color: var(--futux-cyan);
-    box-shadow: 0 0 20px rgba(15, 191, 241, 0.25);
+    background: var(--badge-bg); color: var(--accent-primary);
+    border-color: var(--accent-primary);
   }
 
-  .glass-card {
+  /* Card Component */
+  .card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(20px);
     border-radius: var(--radius-lg);
-    padding: 1.75rem;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-    margin-bottom: 1.75rem;
-    transition: border-color 0.2s ease;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
-  .glass-card:hover { border-color: var(--card-border-glow); }
 
-  /* Upload & Drag Zone */
+  /* Dropzone */
   .dropzone {
-    border: 2px dashed rgba(15, 191, 241, 0.32); border-radius: var(--radius-md);
+    border: 2px dashed var(--dropzone-border); border-radius: var(--radius-md);
     padding: 2.25rem 1.5rem; text-align: center; cursor: pointer;
-    background: rgba(11, 53, 65, 0.18); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--dropzone-bg); transition: all 0.2s;
   }
   .dropzone:hover, .dropzone.dragover {
-    border-color: var(--futux-cyan); background: rgba(15, 191, 241, 0.09);
-    transform: translateY(-1px);
+    border-color: var(--futux-cyan); background: var(--dropzone-hover);
   }
   .upload-icon {
-    width: 44px; height: 44px; margin: 0 auto 0.75rem;
-    border-radius: 50%; background: rgba(15, 191, 241, 0.12);
-    display: flex; align-items: center; justify-content: center; color: var(--futux-cyan);
+    width: 40px; height: 40px; margin: 0 auto 0.75rem;
+    border-radius: 50%; background: var(--badge-bg);
+    display: flex; align-items: center; justify-content: center; color: var(--accent-primary);
   }
 
-  /* Stats Grid */
-  .grid-stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;
-    margin-bottom: 1.75rem;
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem; border-radius: var(--radius-sm);
+    font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
   }
-  .stat-card {
+  .btn-primary { background: var(--accent-primary); color: #FFFFFF; border: none; }
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-secondary {
     background: var(--card-surface); border: 1px solid var(--card-border);
-    border-radius: var(--radius-md); padding: 1.35rem 1.1rem; text-align: center;
-    position: relative; overflow: hidden;
+    color: var(--text-primary);
   }
-  .stat-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--futux-cyan), transparent);
-    opacity: 0.4;
-  }
-  .stat-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .stat-num { font-size: 2.4rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin: 0.35rem 0; line-height: 1.1; }
-  .stat-num.tier1 { color: var(--futux-cyan); text-shadow: 0 0 15px rgba(15, 191, 241, 0.3); }
-  .stat-num.tier2 { color: var(--futux-orange); text-shadow: 0 0 15px rgba(255, 145, 77, 0.3); }
-  .stat-num.tier3 { color: var(--emerald); }
+  .btn-secondary:hover { background: var(--table-row-hover); border-color: var(--card-border-hover); }
 
-  /* Slider Section */
+  /* Column Select Bar */
+  .col-select-bar {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+    font-size: 0.78rem;
+  }
+  .select-styled {
+    background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);
+    padding: 0.35rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace; outline: none;
+  }
+
+  /* Metric Cards */
+  .grid-metrics {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .metric-card {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); padding: 1.25rem 1.1rem; text-align: left;
+  }
+  .metric-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric-num { font-size: 2.25rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; line-height: 1.1; margin: 0.35rem 0; }
+  .metric-num.tier1 { color: var(--futux-cyan); }
+  .metric-num.tier2 { color: var(--futux-orange); }
+  .metric-num.tier3 { color: var(--emerald); }
+  .metric-meta { font-size: 0.75rem; color: var(--text-secondary); }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; }
+  th { background: var(--table-header); text-align: left; padding: 0.7rem 0.9rem; color: var(--text-secondary); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--table-border); }
+  td { padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--table-border); color: var(--text-primary); }
+  tr:hover td { background: var(--table-row-hover); }
+
+  .badge-tag { display: inline-block; padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.68rem; font-weight: 700; }
+  .badge-tier1 { background: rgba(2, 132, 199, 0.12); color: #0284C7; border: 1px solid rgba(2, 132, 199, 0.25); }
+  .badge-tier2 { background: rgba(234, 88, 12, 0.12); color: #EA580C; border: 1px solid rgba(234, 88, 12, 0.25); }
+  .badge-tier3 { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); }
+
+  [data-theme="dark"] .badge-tier1 { background: rgba(15, 191, 241, 0.18); color: var(--futux-cyan); border-color: rgba(15, 191, 241, 0.4); }
+  [data-theme="dark"] .badge-tier2 { background: rgba(255, 145, 77, 0.18); color: var(--futux-orange); border-color: rgba(255, 145, 77, 0.4); }
+  [data-theme="dark"] .badge-tier3 { background: rgba(16, 185, 129, 0.18); color: var(--emerald); border-color: rgba(16, 185, 129, 0.4); }
+
+  .pill-group { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .pill-btn {
+    background: var(--card-surface); border: 1px solid var(--card-border);
+    color: var(--text-secondary); font-size: 0.75rem; font-weight: 600;
+    padding: 0.35rem 0.75rem; border-radius: 999px; cursor: pointer; transition: all 0.2s;
+  }
+  .pill-btn:hover { color: var(--text-primary); border-color: var(--card-border-hover); }
+  .pill-btn.active {
+    background: var(--badge-bg); color: var(--accent-primary);
+    border-color: var(--accent-primary);
+  }
+
+  /* Slider UI */
   .slider-card {
     background: var(--card-surface); border: 1px solid var(--card-border);
     border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1.5rem;
   }
   .slider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .slider-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 800; color: var(--futux-cyan); }
+  .slider-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 800; color: var(--accent-primary); }
   input[type=range] {
     width: 100%; height: 8px; border-radius: 999px;
-    background: #1E293B; outline: none; cursor: pointer; accent-color: var(--futux-cyan);
+    background: var(--card-border); outline: none; cursor: pointer; accent-color: var(--accent-primary);
   }
   .slider-ticks {
     display: flex; justify-content: space-between; font-size: 0.72rem;
     color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 0.6rem;
   }
 
-  /* Status Banner */
   .status-pill {
-    border-radius: var(--radius-md); padding: 1.1rem 1.4rem;
+    border-radius: var(--radius-md); padding: 1rem 1.25rem;
     display: flex; justify-content: space-between; align-items: center;
     font-size: 0.88rem; font-weight: 600; margin-bottom: 1.5rem;
   }
-  .status-tier1 { background: rgba(15, 191, 241, 0.12); color: var(--futux-cyan); border: 1px solid rgba(15, 191, 241, 0.35); }
-  .status-tier2 { background: rgba(255, 145, 77, 0.12); color: var(--futux-orange); border: 1px solid rgba(255, 145, 77, 0.35); }
-  .status-tier3 { background: rgba(16, 185, 129, 0.12); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.35); }
+  .status-tier1 { background: rgba(2, 132, 199, 0.08); color: #0284C7; border: 1px solid rgba(2, 132, 199, 0.25); }
+  .status-tier2 { background: rgba(234, 88, 12, 0.08); color: #EA580C; border: 1px solid rgba(234, 88, 12, 0.25); }
+  .status-tier3 { background: rgba(16, 185, 129, 0.08); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); }
 
-  /* Trace Code */
+  [data-theme="dark"] .status-tier1 { background: rgba(15, 191, 241, 0.12); color: var(--futux-cyan); border-color: rgba(15, 191, 241, 0.35); }
+  [data-theme="dark"] .status-tier2 { background: rgba(255, 145, 77, 0.12); color: var(--futux-orange); border-color: rgba(255, 145, 77, 0.35); }
+  [data-theme="dark"] .status-tier3 { background: rgba(16, 185, 129, 0.12); color: var(--emerald); border-color: rgba(16, 185, 129, 0.35); }
+
   .code-block {
-    background: #020617; border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--code-bg); border: 1px solid var(--code-border);
     border-radius: var(--radius-md); padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem; overflow-x: auto; color: #E2E8F0;
+    font-size: 0.78rem; overflow-x: auto; color: var(--code-text);
   }
   .code-line { padding: 0.2rem 0; }
-  .code-result { border-top: 1px solid #1E293B; margin-top: 0.5rem; padding-top: 0.5rem; color: var(--futux-cyan); font-weight: 700; }
-
-  /* Filter Tabs & Table */
-  .filter-tabs { display: flex; gap: 0.5rem; }
-  .filter-btn {
-    background: transparent; border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--text-muted); font-size: 0.72rem; font-weight: 600;
-    padding: 0.35rem 0.75rem; border-radius: 999px; cursor: pointer; transition: all 0.2s;
-  }
-  .filter-btn:hover { color: var(--text-primary); border-color: var(--card-border); }
-  .filter-btn.active { background: rgba(15, 191, 241, 0.15); color: var(--futux-cyan); border-color: var(--futux-cyan); }
-
-  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; }
-  th { background: rgba(11, 53, 65, 0.55); text-align: left; padding: 0.75rem 1rem; color: var(--text-secondary); text-transform: uppercase; font-size: 0.7rem; }
-  td { padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-  tr:hover td { background: rgba(15, 191, 241, 0.03); }
-  .badge-tag { display: inline-block; padding: 0.18rem 0.5rem; border-radius: 4px; font-size: 0.68rem; font-weight: 700; }
-  .badge-tier1 { background: rgba(15, 191, 241, 0.2); color: var(--futux-cyan); border: 1px solid rgba(15, 191, 241, 0.4); }
-  .badge-tier2 { background: rgba(255, 145, 77, 0.2); color: var(--futux-orange); border: 1px solid rgba(255, 145, 77, 0.4); }
-  .badge-tier3 { background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
-
-  .btn-action {
-    background: linear-gradient(135deg, var(--futux-cyan), #0284C7);
-    color: #042F2E; border: none; padding: 0.55rem 1.15rem; border-radius: var(--radius-sm);
-    font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: opacity 0.2s;
-    display: inline-flex; align-items: center; gap: 0.4rem;
-  }
-  .btn-action:hover { opacity: 0.9; }
-  .btn-action.secondary {
-    background: rgba(11, 53, 65, 0.7); color: var(--futux-cyan);
-    border: 1px solid var(--card-border);
-  }
-  .btn-action.secondary:hover { background: rgba(11, 53, 65, 0.95); }
-
-  .column-picker-bar {
-    background: rgba(5, 11, 18, 0.65); border: 1px solid var(--card-border);
-    border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem;
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
-    font-size: 0.78rem;
-  }
-  .select-styled {
-    background: #0B3541; color: var(--text-primary); border: 1px solid var(--card-border);
-    padding: 0.35rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.78rem;
-    font-family: 'JetBrains Mono', monospace; outline: none;
-  }
+  .code-result { border-top: 1px solid var(--card-border); margin-top: 0.5rem; padding-top: 0.5rem; color: var(--accent-primary); font-weight: 700; }
 
   footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 3.5rem; }
-  footer a { color: var(--futux-cyan); text-decoration: none; }
+  footer a { color: var(--accent-primary); text-decoration: none; }
 </style>
 </head>
 <body>
 <div class="container">
-  <header>
-    <div class="brand-pill">
-      <span class="brand-dot"></span>
-      FutuX Agri-consult &bull; Open-Source ML Infrastructure
+  <div class="top-nav">
+    <div class="brand-group">
+      <div class="brand-logo-mark">FX</div>
+      <div>
+        <span class="brand-name">FutuX Agri-consult</span>
+        <span class="brand-tag">ML Deduplication</span>
+      </div>
     </div>
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">
+      <span id="theme-icon">🌙</span>
+      <span id="theme-label">Dark Mode</span>
+    </button>
+  </div>
+
+  <div class="hero">
     <h1>Whitebox-Dedup <span class="cyan">ML</span> <span class="orange">Playground</span></h1>
-    <p class="subtitle">Auditable MARS Deduplication &amp; Inductive Conformal Prediction (ICP) Circuit Breaker with 100% Client-Side Dataset Deduplication.</p>
+    <p class="subtitle">Auditable piecewise MARS deduplication and Inductive Conformal Prediction (ICP) statutory circuit breaker. Upload any tabular CSV to detect entity duplicates in 100% client-side execution.</p>
     
     <div class="privacy-strip">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <div><strong>Complete Privacy Guarantee:</strong> Your dataset never leaves this browser tab. Tokenization, candidate blocking, Jaro-Winkler indexing, and piecewise MARS calculations execute locally on your device.</div>
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div><strong>Complete Privacy Guarantee:</strong> Zero network uploads. All candidate blocking, tokenization, Jaro-Winkler distances, and MARS spline arithmetic run locally in your browser.</div>
     </div>
-  </header>
+  </div>
 
   <div class="nav-tabs">
     <button class="tab-btn active" id="tab-btn-dataset" onclick="switchTab('dataset')">Tab 1: Upload Dataset &amp; Deduplicate</button>
@@ -236,18 +314,18 @@
 
   <!-- TAB 1: DATASET DEDUPLICATION -->
   <div id="tab-dataset">
-    <div class="glass-card">
+    <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
         <div>
-          <h2 style="font-size: 1.15rem; font-weight: 700;">Upload Beneficiary CSV or Run Preset Roster</h2>
-          <p style="font-size: 0.8rem; color: var(--text-secondary);">The ML engine auto-detects name, phone, and ID fields, applies candidate blocking, and evaluates the MARS equation.</p>
+          <h2 style="font-size: 1.15rem; font-weight: 700;">Upload Tabular Dataset or Run Sample Roster</h2>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">The engine automatically identifies target columns, creates candidate blocks, and scores pairs.</p>
         </div>
         <div style="display: flex; gap: 0.5rem;">
-          <button class="btn-action secondary" onclick="loadSampleRoster()">
+          <button class="btn btn-secondary" onclick="loadSampleRoster()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             Load Sample Roster (100 rows)
           </button>
-          <button class="btn-action" onclick="document.getElementById('file-input').click()">
+          <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
             Upload CSV
           </button>
@@ -256,19 +334,19 @@
 
       <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
         <div class="upload-icon">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
         </div>
-        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem;">Click to upload or drag &amp; drop any CSV file</div>
-        <div style="font-size: 0.78rem; color: var(--text-muted);">Works with any column schema (NIN, farmer roster, voter rolls, credit applicants)</div>
+        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem;">Click to upload or drag &amp; drop ANY CSV file</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">Works with any column schema (farmers, customers, patients, voter rolls, transactions)</div>
         <input type="file" id="file-input" accept=".csv" style="display: none;" onchange="handleCSVUpload(event)">
       </div>
 
-      <div id="col-picker-container" class="column-picker-bar" style="display: none;">
+      <div id="col-picker-container" class="col-select-bar" style="display: none;">
         <div>
-          <span style="color: var(--text-muted); margin-right: 0.5rem;">Target Name Field:</span>
+          <span style="color: var(--text-muted); margin-right: 0.5rem; font-weight: 600;">Deduplicate Across Field:</span>
           <select id="col-name-select" class="select-styled" onchange="recalculateOnColumnChange()"></select>
         </div>
-        <div id="file-meta" style="color: var(--futux-cyan); font-family: 'JetBrains Mono', monospace;">
+        <div id="file-meta" style="color: var(--accent-primary); font-family: 'JetBrains Mono', monospace;">
           Parsed: 0 rows
         </div>
       </div>
@@ -276,43 +354,43 @@
 
     <!-- Results Section -->
     <div id="results-section" style="display: none;">
-      <div class="grid-stats">
-        <div class="stat-card">
-          <div class="stat-label">Evaluated Records</div>
-          <div class="stat-num" id="stat-records">100</div>
-          <div style="font-size: 0.72rem; color: var(--text-muted);" id="stat-pairs">Candidate pairs: 45</div>
+      <div class="grid-metrics">
+        <div class="metric-card">
+          <div class="metric-label">Evaluated Records</div>
+          <div class="metric-num" id="stat-records">100</div>
+          <div class="metric-meta" id="stat-pairs">Candidate pairs: 45</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Tier 1: Auto-Merge</div>
-          <div class="stat-num tier1" id="stat-tier1">8</div>
-          <div style="font-size: 0.72rem; color: var(--futux-cyan);">Definite Duplicates (P &ge; 0.898)</div>
+        <div class="metric-card">
+          <div class="metric-label">Tier 1: Auto-Merge</div>
+          <div class="metric-num tier1" id="stat-tier1">8</div>
+          <div class="metric-meta" style="color: var(--futux-cyan); font-weight: 600;">Definite Duplicates (P &ge; 0.898)</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Tier 2: Circuit Breaker</div>
-          <div class="stat-num tier2" id="stat-tier2">4</div>
-          <div style="font-size: 0.72rem; color: var(--futux-orange);">Human Review Required</div>
+        <div class="metric-card">
+          <div class="metric-label">Tier 2: Circuit Breaker</div>
+          <div class="metric-num tier2" id="stat-tier2">4</div>
+          <div class="metric-meta" style="color: var(--futux-orange); font-weight: 600;">Human Audit Required</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Tier 3: Auto-Distinct</div>
-          <div class="stat-num tier3" id="stat-tier3">33</div>
-          <div style="font-size: 0.72rem; color: var(--emerald);">Confirmed Distinct (P &lt; 0.491)</div>
+        <div class="metric-card">
+          <div class="metric-label">Tier 3: Auto-Distinct</div>
+          <div class="metric-num tier3" id="stat-tier3">33</div>
+          <div class="metric-meta" style="color: var(--emerald); font-weight: 600;">Confirmed Distinct (P &lt; 0.491)</div>
         </div>
       </div>
 
-      <div class="glass-card">
+      <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
             <h3 style="font-size: 1.05rem; font-weight: 700;">Deduplication Results &amp; Audit Trail</h3>
-            <div class="filter-tabs">
-              <button class="filter-btn active" onclick="filterResults('all', this)">All Pairs</button>
-              <button class="filter-btn" onclick="filterResults('tier1', this)">Tier 1 Merge</button>
-              <button class="filter-btn" onclick="filterResults('tier2', this)">Tier 2 Review</button>
-              <button class="filter-btn" onclick="filterResults('tier3', this)">Tier 3 Distinct</button>
+            <div class="pill-group">
+              <button class="pill-btn active" onclick="filterResults('all', this)">All Pairs</button>
+              <button class="pill-btn" onclick="filterResults('tier1', this)">Tier 1 Merge</button>
+              <button class="pill-btn" onclick="filterResults('tier2', this)">Tier 2 Review</button>
+              <button class="pill-btn" onclick="filterResults('tier3', this)">Tier 3 Distinct</button>
             </div>
           </div>
           <div style="display: flex; gap: 0.5rem;">
-            <button class="btn-action secondary" onclick="exportResultsCSV()">Download CSV</button>
-            <button class="btn-action" onclick="exportResultsJSON()">Download JSON</button>
+            <button class="btn btn-secondary" onclick="exportResultsCSV()">Download CSV</button>
+            <button class="btn btn-primary" onclick="exportResultsJSON()">Download JSON</button>
           </div>
         </div>
         <div style="max-height: 440px; overflow-y: auto;">
@@ -337,10 +415,10 @@
 
   <!-- TAB 2: INTERACTIVE SLIDER -->
   <div id="tab-slider" style="display: none;">
-    <div class="glass-card">
+    <div class="card">
       <div class="slider-card">
         <div class="slider-top">
-          <span style="font-weight: 600; font-size: 0.9rem;">Candidate Jaro-Winkler Full Name Similarity (JW):</span>
+          <span style="font-weight: 600; font-size: 0.9rem;">Candidate Jaro-Winkler Similarity (JW):</span>
           <span class="slider-val" id="jw-val">0.750</span>
         </div>
         <input type="range" id="jw-slider" min="0.0" max="1.0" step="0.005" value="0.75" oninput="runSliderEval(this.value)">
@@ -352,18 +430,18 @@
         </div>
       </div>
 
-      <div class="grid-stats">
-        <div class="stat-card">
-          <div class="stat-label">Calculated Logit</div>
-          <div class="stat-num" id="stat-logit">-0.542</div>
+      <div class="grid-metrics">
+        <div class="metric-card">
+          <div class="metric-label">Calculated Logit</div>
+          <div class="metric-num" id="stat-logit">-0.542</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Duplicate Probability P(dup)</div>
-          <div class="stat-num" style="color: var(--futux-cyan);" id="stat-prob">36.77%</div>
+        <div class="metric-card">
+          <div class="metric-label">Duplicate Probability P(dup)</div>
+          <div class="metric-num" style="color: var(--accent-primary);" id="stat-prob">36.77%</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Conformal Prediction Set</div>
-          <div class="stat-num" style="color: var(--futux-orange);" id="stat-set">{0, 1}</div>
+        <div class="metric-card">
+          <div class="metric-label">Conformal Prediction Set</div>
+          <div class="metric-num" style="color: var(--futux-orange);" id="stat-set">{0, 1}</div>
         </div>
       </div>
 
@@ -397,7 +475,40 @@
 </div>
 
 <script>
-// --- Pure JavaScript Jaro-Winkler implementation ---
+// --- Theme Switcher ---
+function initTheme() {
+  const saved = localStorage.getItem("futux-theme");
+  if (saved) {
+    setTheme(saved);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme("dark");
+  } else {
+    setTheme("light");
+  }
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("futux-theme", theme);
+  const icon = document.getElementById("theme-icon");
+  const label = document.getElementById("theme-label");
+  if (theme === "dark") {
+    icon.innerText = "☀️";
+    label.innerText = "Light Mode";
+  } else {
+    icon.innerText = "🌙";
+    label.innerText = "Dark Mode";
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme");
+  setTheme(current === "dark" ? "light" : "dark");
+}
+
+initTheme();
+
+// --- Jaro-Winkler implementation ---
 function jaroWinkler(s1, s2) {
   if (s1 === s2) return 1.0;
   const len1 = s1.length, len2 = s2.length;
@@ -466,7 +577,7 @@ function runSliderEval(valStr) {
     text.innerText = "Tier 1: Auto-Merge Duplicate (Automated Statistical Certainty)";
     cov.innerText = "Prediction Set: {1} [Duplicate]";
     setEl.innerText = "{1}";
-    setEl.style.color = "var(--futux-cyan)";
+    setEl.style.color = "var(--accent-primary)";
   } else {
     badge.className = "status-pill status-tier2";
     text.innerText = "Tier 2: STATUTORY SAFEGUARD TRIGGERED — Human Review Required";
@@ -525,7 +636,8 @@ function populateColumnPicker(records, filename) {
   const select = document.getElementById("col-name-select");
   select.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join("");
   
-  const detected = cols.find(c => /name|farmer|full_name|beneficiary/i.test(c)) || cols[0];
+  // Prioritize text/entity columns over numeric IDs
+  const detected = cols.find(c => /name|title|farmer|full_name|beneficiary|customer|entity|company/i.test(c)) || cols.find(c => !/id|key|code|date|num/i.test(c)) || cols[0];
   select.value = detected;
 
   document.getElementById("col-picker-container").style.display = "flex";
@@ -539,34 +651,40 @@ function recalculateOnColumnChange() {
   }
 }
 
-// --- Dataset Deduplication Engine ---
+// Universal Tabular Deduplication Engine
 function processDatasetRecords(records, overrideNameCol) {
   const cols = Object.keys(records[0] || {});
-  const nameCol = overrideNameCol || cols.find(c => /name|farmer|full_name|beneficiary/i.test(c)) || cols[1] || cols[0];
+  const targetCol = overrideNameCol || cols.find(c => /name|title|farmer|full_name|beneficiary|customer|entity|company/i.test(c)) || cols[0];
 
-  // Inverted index blocking on first 2 letters
+  // Inverted token prefix index blocking
   const blocks = {};
   records.forEach((r, idx) => {
-    const raw = String(r[nameCol] || "").trim().toLowerCase();
+    const raw = String(r[targetCol] || "").trim().toLowerCase();
     const token = raw.split(/\s+/)[0] || "";
+    // 2-character prefix or fallback to full token
     const key = token.slice(0, 2) || "_";
     if (!blocks[key]) blocks[key] = [];
-    blocks[key].push({ idx, name: raw, fullRecord: r });
+    blocks[key].push({ idx, text: raw, fullRecord: r });
   });
 
   const pairs = [];
   const evaluatedPairs = new Set();
+  let candidateLimitReached = false;
   
   for (const block of Object.values(blocks)) {
     if (block.length > 1) {
       for (let i = 0; i < block.length; i++) {
         for (let j = i + 1; j < block.length; j++) {
+          if (pairs.length >= 2000) {
+            candidateLimitReached = true;
+            break;
+          }
           const a = block[i], b = block[j];
           const pairKey = a.idx < b.idx ? `${a.idx}-${b.idx}` : `${b.idx}-${a.idx}`;
           if (evaluatedPairs.has(pairKey)) continue;
           evaluatedPairs.add(pairKey);
 
-          const jw = jaroWinkler(a.name, b.name);
+          const jw = jaroWinkler(a.text, b.text);
           const mars = scoreMARS(jw);
 
           let tier = 'tier3';
@@ -583,16 +701,18 @@ function processDatasetRecords(records, overrideNameCol) {
           pairs.push({
             indexA: a.idx,
             indexB: b.idx,
-            nameA: a.fullRecord[nameCol],
-            nameB: b.fullRecord[nameCol],
+            valA: a.fullRecord[targetCol],
+            valB: b.fullRecord[targetCol],
             jw: jw,
             probability: mars.prob,
             tier: tier,
             reason: reason,
           });
         }
+        if (candidateLimitReached) break;
       }
     }
+    if (candidateLimitReached) break;
   }
 
   const t1 = pairs.filter(p => p.tier === 'tier1').length;
@@ -605,6 +725,7 @@ function processDatasetRecords(records, overrideNameCol) {
     tier1: t1,
     tier2: t2,
     tier3: t3,
+    targetCol: targetCol,
     pairs: pairs.sort((x, y) => y.probability - x.probability),
   };
 
@@ -635,8 +756,8 @@ function renderDedupTable() {
     tbody.innerHTML = filtered.slice(0, 150).map(p => `
       <tr>
         <td><span class="badge-tag badge-${p.tier}">${p.tier === 'tier1' ? 'Tier 1 Auto-Merge' : p.tier === 'tier2' ? 'Tier 2 Review' : 'Tier 3 Distinct'}</span></td>
-        <td><strong>#${p.indexA + 1}</strong>: ${p.nameA}</td>
-        <td><strong>#${p.indexB + 1}</strong>: ${p.nameB}</td>
+        <td><strong>#${p.indexA + 1}</strong>: ${p.valA}</td>
+        <td><strong>#${p.indexB + 1}</strong>: ${p.valB}</td>
         <td>${p.jw.toFixed(4)}</td>
         <td style="color: ${p.probability > 0.8 ? 'var(--futux-cyan)' : p.probability > 0.4 ? 'var(--futux-orange)' : 'var(--text-muted)'}; font-weight: 700;">${(p.probability * 100).toFixed(1)}%</td>
         <td>${p.reason}</td>
@@ -647,7 +768,7 @@ function renderDedupTable() {
 
 function filterResults(tier, btn) {
   activeResultFilter = tier;
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".card .pill-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
   renderDedupTable();
 }
@@ -688,7 +809,7 @@ function exportResultsCSV() {
   if (!lastDeduplicationResults || !lastDeduplicationResults.pairs) return;
   const header = "tier,index_a,record_a,index_b,record_b,jw_score,probability,decision_reason\n";
   const rows = lastDeduplicationResults.pairs.map(p => 
-    `"${p.tier}",${p.indexA + 1},"${p.nameA.replace(/"/g, '""')}",${p.indexB + 1},"${p.nameB.replace(/"/g, '""')}",${p.jw.toFixed(4)},${p.probability.toFixed(4)},"${p.reason}"`
+    `"${p.tier}",${p.indexA + 1},"${String(p.valA).replace(/"/g, '""')}",${p.indexB + 1},"${String(p.valB).replace(/"/g, '""')}",${p.jw.toFixed(4)},${p.probability.toFixed(4)},"${p.reason}"`
   ).join("\n");
   const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
