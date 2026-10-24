@@ -39,6 +39,7 @@
     --code-bg: #F8FAFC;
     --code-border: #E2E8F0;
     --code-text: #0F172A;
+    --guide-bg: #F1F5F9;
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 18px;
@@ -46,7 +47,7 @@
   }
 
   [data-theme="dark"] {
-    /* Dark Theme (Pure Black minimalist) */
+    /* Dark Theme (Pure Black Minimalist) */
     --bg: #000000;
     --bg-alt: #080D14;
     --card-bg: #0A1017;
@@ -69,6 +70,7 @@
     --code-bg: #050B12;
     --code-border: #1E293B;
     --code-text: #E2E8F0;
+    --guide-bg: #0B131E;
     --shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
   }
 
@@ -87,7 +89,7 @@
 
   /* Navigation Bar */
   .top-nav {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.25rem;
     padding-bottom: 1.25rem; border-bottom: 1px solid var(--card-border);
   }
   .brand-group { display: flex; align-items: center; gap: 0.75rem; }
@@ -96,15 +98,18 @@
     background: var(--futux-petrol); display: flex; align-items: center; justify-content: center;
     color: var(--futux-cyan); font-weight: 800; font-size: 0.95rem; font-family: 'JetBrains Mono', monospace;
   }
-  [data-theme="dark"] .brand-logo-mark {
-    background: #0B3541; border: 1px solid var(--futux-cyan);
-  }
+  [data-theme="dark"] .brand-logo-mark { background: #0B3541; border: 1px solid var(--futux-cyan); }
   .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
   .brand-tag {
     font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 999px;
     background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--badge-text);
   }
 
+  /* Lucide Icon Vector Styling */
+  .lucide { width: 16px; height: 16px; stroke-width: 2; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; display: inline-block; vertical-align: middle; }
+  .lucide-lg { width: 22px; height: 22px; }
+
+  .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
   .theme-toggle {
     display: inline-flex; align-items: center; gap: 0.45rem;
     background: var(--card-surface); border: 1px solid var(--card-border);
@@ -115,10 +120,10 @@
 
   /* Hero Section */
   .hero { text-align: left; margin-bottom: 2rem; }
-  h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.4rem; line-height: 1.15; }
+  h1 { font-size: 2.35rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.4rem; line-height: 1.15; }
   h1 span.cyan { color: var(--futux-cyan); }
   h1 span.orange { color: var(--futux-orange); }
-  p.subtitle { color: var(--text-secondary); font-size: 1rem; max-width: 720px; }
+  p.subtitle { color: var(--text-secondary); font-size: 1rem; max-width: 740px; }
 
   .privacy-strip {
     margin: 1.25rem 0 0;
@@ -128,10 +133,28 @@
   }
   .privacy-strip strong { color: var(--text-primary); }
 
-  /* Tab Navigation */
-  .nav-tabs {
-    display: flex; gap: 0.5rem; margin: 1.75rem 0 1.5rem;
+  /* Guide Drawer */
+  .guide-card {
+    background: var(--guide-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden;
   }
+  .guide-header {
+    padding: 0.85rem 1.25rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.85rem; font-weight: 700; color: var(--text-primary);
+  }
+  .guide-header:hover { background: var(--table-row-hover); }
+  .guide-content {
+    padding: 1.25rem; border-top: 1px solid var(--card-border);
+    font-size: 0.82rem; color: var(--text-secondary); display: none;
+  }
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 0.75rem; }
+  .guide-box {
+    background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 0.85rem;
+  }
+  .guide-box strong { color: var(--text-primary); display: block; margin-bottom: 0.25rem; font-size: 0.82rem; }
+
+  /* Tab Navigation */
+  .nav-tabs { display: flex; gap: 0.5rem; margin: 1.75rem 0 1.5rem; }
   .tab-btn {
     background: var(--card-surface); border: 1px solid var(--card-border);
     color: var(--text-secondary); padding: 0.55rem 1.2rem; border-radius: 999px;
@@ -164,14 +187,14 @@
     border-color: var(--futux-cyan); background: var(--dropzone-hover);
   }
   .upload-icon {
-    width: 40px; height: 40px; margin: 0 auto 0.75rem;
+    width: 44px; height: 44px; margin: 0 auto 0.75rem;
     border-radius: 50%; background: var(--badge-bg);
     display: flex; align-items: center; justify-content: center; color: var(--accent-primary);
   }
 
   /* Buttons */
   .btn {
-    display: inline-flex; align-items: center; gap: 0.4rem;
+    display: inline-flex; align-items: center; gap: 0.45rem;
     padding: 0.5rem 1rem; border-radius: var(--radius-sm);
     font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
     font-family: inherit;
@@ -291,10 +314,15 @@
         <span class="brand-tag">ML Deduplication</span>
       </div>
     </div>
-    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">
-      <span id="theme-icon">🌙</span>
-      <span id="theme-label">Dark Mode</span>
-    </button>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">
+        <span id="theme-icon-container">
+          <!-- Sun icon -->
+          <svg class="lucide" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </span>
+        <span id="theme-label">Dark Mode</span>
+      </button>
+    </div>
   </div>
 
   <div class="hero">
@@ -302,8 +330,46 @@
     <p class="subtitle">Auditable piecewise MARS deduplication and Inductive Conformal Prediction (ICP) statutory circuit breaker. Upload any tabular CSV to detect entity duplicates in 100% client-side execution.</p>
     
     <div class="privacy-strip">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <svg class="lucide" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <div><strong>Complete Privacy Guarantee:</strong> Zero network uploads. All candidate blocking, tokenization, Jaro-Winkler distances, and MARS spline arithmetic run locally in your browser.</div>
+    </div>
+  </div>
+
+  <!-- Interactive Guide & Column Selection Drawer -->
+  <div class="guide-card">
+    <div class="guide-header" onclick="toggleGuide()">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <svg class="lucide" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>Use Cases &amp; What Happens if Your CSV Has No Name Column</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--accent-primary);">
+        <span id="guide-toggle-text">Show Guide</span>
+        <svg id="guide-arrow" class="lucide" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="guide-content" id="guide-content">
+      <p style="margin-bottom: 0.75rem; line-height: 1.5;">
+        <strong>What if your dataset doesn't have a <code>name</code> column?</strong><br>
+        The engine does not fail. It automatically detects all columns in your CSV and selects the primary text column. You can also pick <strong>any target column</strong> from the dropdown (e.g. <code>company_name</code>, <code>customer_id</code>, <code>title</code>, <code>address</code>, <code>phone</code>).
+      </p>
+      <div class="guide-grid">
+        <div class="guide-box">
+          <strong>Recommended Starter Columns</strong>
+          <code>beneficiary_id</code>, <code>full_name</code>, <code>phone_number</code>, <code>state</code>, <code>latitude</code>, <code>longitude</code>.
+        </div>
+        <div class="guide-box">
+          <strong>Tier 1: Auto-Merge ($P \ge 0.898$)</strong>
+          Statistically verified duplicates (e.g., typos, swapped names) merged automatically with auditable justification.
+        </div>
+        <div class="guide-box">
+          <strong>Tier 2: Circuit Breaker ($0.491 \le P &lt; 0.898$)</strong>
+          Conformal prediction set is $\{0, 1\}$ (Ambiguous). Safely pauses and flags for human audit to prevent wrongful exclusion.
+        </div>
+        <div class="guide-box">
+          <strong>Tier 3: Auto-Distinct ($P &lt; 0.491$)</strong>
+          Mathematically confirmed distinct individuals. Retained as valid separate records.
+        </div>
+      </div>
     </div>
   </div>
 
@@ -320,13 +386,17 @@
           <h2 style="font-size: 1.15rem; font-weight: 700;">Upload Tabular Dataset or Run Sample Roster</h2>
           <p style="font-size: 0.8rem; color: var(--text-secondary);">The engine automatically identifies target columns, creates candidate blocks, and scores pairs.</p>
         </div>
-        <div style="display: flex; gap: 0.5rem;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="downloadStarterTemplate()">
+            <svg class="lucide" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download Starter Template
+          </button>
           <button class="btn btn-secondary" onclick="loadSampleRoster()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            Load Sample Roster (100 rows)
+            <svg class="lucide" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 0 0 4.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 0 1-15.357-2m15.357 2H15"/></svg>
+            Load Sample (100 rows)
           </button>
           <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+            <svg class="lucide" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
             Upload CSV
           </button>
         </div>
@@ -334,7 +404,7 @@
 
       <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
         <div class="upload-icon">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <svg class="lucide lucide-lg" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
         </div>
         <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem;">Click to upload or drag &amp; drop ANY CSV file</div>
         <div style="font-size: 0.78rem; color: var(--text-muted);">Works with any column schema (farmers, customers, patients, voter rolls, transactions)</div>
@@ -389,8 +459,14 @@
             </div>
           </div>
           <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary" onclick="exportResultsCSV()">Download CSV</button>
-            <button class="btn btn-primary" onclick="exportResultsJSON()">Download JSON</button>
+            <button class="btn btn-secondary" onclick="exportResultsCSV()">
+              <svg class="lucide" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Download CSV
+            </button>
+            <button class="btn btn-primary" onclick="exportResultsJSON()">
+              <svg class="lucide" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Download JSON
+            </button>
           </div>
         </div>
         <div style="max-height: 440px; overflow-y: auto;">
@@ -475,7 +551,10 @@
 </div>
 
 <script>
-// --- Theme Switcher ---
+// --- Theme Switcher (Vector Lucide Icons) ---
+const SUN_SVG = `<svg class="lucide" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+const MOON_SVG = `<svg class="lucide" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+
 function initTheme() {
   const saved = localStorage.getItem("futux-theme");
   if (saved) {
@@ -490,13 +569,13 @@ function initTheme() {
 function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem("futux-theme", theme);
-  const icon = document.getElementById("theme-icon");
+  const iconContainer = document.getElementById("theme-icon-container");
   const label = document.getElementById("theme-label");
   if (theme === "dark") {
-    icon.innerText = "☀️";
+    iconContainer.innerHTML = SUN_SVG;
     label.innerText = "Light Mode";
   } else {
-    icon.innerText = "🌙";
+    iconContainer.innerHTML = MOON_SVG;
     label.innerText = "Dark Mode";
   }
 }
@@ -504,6 +583,16 @@ function setTheme(theme) {
 function toggleTheme() {
   const current = document.documentElement.getAttribute("data-theme");
   setTheme(current === "dark" ? "light" : "dark");
+}
+
+function toggleGuide() {
+  const content = document.getElementById("guide-content");
+  const text = document.getElementById("guide-toggle-text");
+  const arrow = document.getElementById("guide-arrow");
+  const isHidden = content.style.display === "none" || content.style.display === "";
+  content.style.display = isHidden ? "block" : "none";
+  text.innerText = isHidden ? "Hide Guide" : "Show Guide";
+  arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
 }
 
 initTheme();
@@ -636,7 +725,7 @@ function populateColumnPicker(records, filename) {
   const select = document.getElementById("col-name-select");
   select.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join("");
   
-  // Prioritize text/entity columns over numeric IDs
+  // Prioritize text/entity columns over pure numeric IDs
   const detected = cols.find(c => /name|title|farmer|full_name|beneficiary|customer|entity|company/i.test(c)) || cols.find(c => !/id|key|code|date|num/i.test(c)) || cols[0];
   select.value = detected;
 
@@ -661,7 +750,6 @@ function processDatasetRecords(records, overrideNameCol) {
   records.forEach((r, idx) => {
     const raw = String(r[targetCol] || "").trim().toLowerCase();
     const token = raw.split(/\s+/)[0] || "";
-    // 2-character prefix or fallback to full token
     const key = token.slice(0, 2) || "_";
     if (!blocks[key]) blocks[key] = [];
     blocks[key].push({ idx, text: raw, fullRecord: r });
@@ -793,6 +881,28 @@ function loadSampleRoster() {
   loadedRecords = full;
   populateColumnPicker(full, "sample_farmer_roster.csv");
   processDatasetRecords(full);
+}
+
+// Download Starter Template CSV
+function downloadStarterTemplate() {
+  const headers = "beneficiary_id,full_name,phone_number,state,latitude,longitude\n";
+  const rows = [
+    'BEN-001,Aminu Kano,+2348012345678,Kano,12.0022,8.5920',
+    'BEN-002,Aminnu Kano,+2348012345678,Kano,12.0022,8.5920',
+    'BEN-003,Bello Abubakar,+2348099887766,Kaduna,10.5105,7.4165',
+    'BEN-004,Bello Abubakr,+2348099887766,Kaduna,10.5105,7.4165',
+    'BEN-005,Fatima Ibrahim,+2347011223344,Sokoto,13.0609,5.2348',
+    'BEN-006,Zainab Waziri,+2348055667788,Katsina,12.9887,7.6009',
+    'BEN-007,Musa Garba,+2348022334455,Bauchi,10.3158,9.8442',
+    'BEN-008,Musa Garbaa,+2348022334455,Bauchi,10.3158,9.8442'
+  ].join("\n");
+
+  const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "futux_dedup_template.csv";
+  a.click();
 }
 
 function exportResultsJSON() {
