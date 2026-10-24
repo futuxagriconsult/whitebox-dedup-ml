@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whitebox-Dedup Live Circuit Breaker Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f19;
+    --card-bg: rgba(17, 24, 39, 0.75);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --emerald: #10b981;
+    --blue: #3b82f6;
+    --amber: #f59e0b;
+    --purple: #8b5cf6;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 75%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2.5rem 1rem;
+    line-height: 1.5;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0.85rem; border-radius: 999px;
+    background: rgba(139, 92, 246, 0.15); color: #c4b5fd;
+    border: 1px solid rgba(139, 92, 246, 0.3); font-size: 0.75rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  h1 span { background: linear-gradient(135deg, #a78bfa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  p.subtitle { color: var(--text-muted); font-size: 1rem; max-width: 650px; margin: 0 auto; }
+
+  .glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(14px);
+    border-radius: 18px;
+    padding: 1.75rem;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+    margin-bottom: 1.75rem;
+  }
+
+  .slider-box {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .slider-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; font-weight: 600;
+  }
+  .slider-header span.val {
+    font-family: 'JetBrains Mono', monospace; font-size: 1.6rem;
+    font-weight: 800; color: #38bdf8;
+  }
+  input[type=range] {
+    width: 100%; height: 8px; border-radius: 999px;
+    background: #334155; outline: none; cursor: pointer;
+    accent-color: #38bdf8;
+  }
+  .ticks {
+    display: flex; justify-content: space-between; font-size: 0.72rem;
+    color: var(--text-muted); font-family: 'JetBrains Mono', monospace;
+    margin-top: 0.5rem;
+  }
+  .tick-ambiguous { color: #fbbf24; font-weight: 700; }
+  .tick-knot { color: #60a5fa; font-weight: 700; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 1.25rem; text-align: center;
+  }
+  .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+  .stat-num { font-size: 2.2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin-top: 0.4rem; }
+
+  .status-banner {
+    border-radius: 12px; padding: 1.1rem 1.4rem; font-weight: 600;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.9rem; margin-bottom: 1.5rem; transition: all 0.3s ease;
+  }
+  .status-distinct { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+  .status-breaker { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .status-duplicate { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+  .trace-card {
+    background: #020617; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; overflow-x: auto;
+  }
+  .trace-line { padding: 0.25rem 0; color: #cbd5e1; }
+  .trace-highlight { color: #38bdf8; font-weight: 700; }
+  .trace-final { border-top: 1px solid #1e293b; margin-top: 0.5rem; padding-top: 0.5rem; color: #34d399; font-weight: 700; }
+
+  footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 3rem; }
+  footer a { color: #a78bfa; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">Interpretable ML & Conformal Prediction</div>
+    <h1>Whitebox-Dedup <span>Playground</span></h1>
+    <p class="subtitle">Experience the auditable MARS equation and Inductive Conformal Prediction (ICP) circuit breaker in real time.</p>
+  </header>
+
+  <div class="glass-card">
+    <div class="slider-box">
+      <div class="slider-header">
+        <span>Candidate Jaro-Winkler Full Name Similarity (JW):</span>
+        <span class="val" id="jw-val">0.750</span>
+      </div>
+      <input type="range" id="jw-slider" min="0.0" max="1.0" step="0.005" value="0.75" oninput="updateCalculator(this.value)">
+      <div class="ticks">
+        <span>0.000 (Distinct)</span>
+        <span class="tick-ambiguous">0.491 (Ambiguous Zone Begins)</span>
+        <span class="tick-knot">0.898 (Duplicate Transition)</span>
+        <span>1.000 (Exact Match)</span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Calculated Logit</div>
+        <div class="stat-num" id="stat-logit">-0.542</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Duplicate Probability P(dup)</div>
+        <div class="stat-num" style="color: #a78bfa;" id="stat-prob">36.77%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Conformal Prediction Set</div>
+        <div class="stat-num" style="color: #fbbf24;" id="stat-set">{0, 1}</div>
+      </div>
+    </div>
+
+    <div id="status-badge" class="status-banner status-breaker">
+      <div id="status-text">Tier 2: STATUTORY SAFEGUARD TRIGGERED &mdash; Human Review Required</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;" id="status-cov">Coverage: Ambiguous Zone</div>
+    </div>
+
+    <div>
+      <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+        Mathematical Arithmetic Trace (Spreadsheet-Readable)
+      </div>
+      <div class="trace-card">
+        <div class="trace-line">logit = -102.231 (intercept)</div>
+        <div class="trace-line" id="trace-h1">&nbsp; + 562.965 * max(0, 0.750 - 0.559) = +107.526</div>
+        <div class="trace-line" id="trace-h2">&nbsp; - 679.490 * max(0, 0.750 - 0.806) = 0.000</div>
+        <div class="trace-line" id="trace-h3">&nbsp; +  96.830 * max(0, 0.898 - 0.750) = +14.331</div>
+        <div class="trace-line" id="trace-h4">&nbsp; + 122.623 * max(0, 0.750 - 0.898) = 0.000</div>
+        <div class="trace-final" id="trace-total">
+          &nbsp;= -0.542 &rarr; P(duplicate) = 1 / (1 + exp(-(-0.542))) = 0.3677
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Maintained by <strong>Daniel Olagunju</strong> (<a href="mailto:d.olagunju@futuxconsult.com">d.olagunju@futuxconsult.com</a>) &amp; <strong>Temitope Olarewaju</strong> (<a href="mailto:t.olarewaju@futuxconsult.com">t.olarewaju@futuxconsult.com</a>)</p>
+    <p style="margin-top: 0.3rem;">FutuX Agri-consult Limited &bull; Released under MIT License &bull; <a href="https://github.com/todak2000/whitebox-dedup-ml" target="_blank">GitHub Repository</a></p>
+  </footer>
+</div>
+
+<script>
+function updateCalculator(valStr) {
+  const jw = parseFloat(valStr);
+  document.getElementById("jw-val").innerText = jw.toFixed(3);
+
+  const h1 = 562.965 * Math.max(0, jw - 0.559);
+  const h2 = -679.490 * Math.max(0, jw - 0.806);
+  const h3 = 96.830 * Math.max(0, 0.898 - jw);
+  const h4 = 122.623 * Math.max(0, jw - 0.898);
+  const logit = -102.231 + h1 + h2 + h3 + h4;
+
+  let prob = 0.0;
+  if (logit >= 50.0) prob = 1.0;
+  else if (logit <= -50.0) prob = 0.0;
+  else prob = 1.0 / (1.0 + Math.exp(-logit));
+
+  document.getElementById("stat-logit").innerText = logit.toFixed(3);
+  document.getElementById("stat-prob").innerText = (prob * 100).toFixed(2) + "%";
+
+  const badge = document.getElementById("status-badge");
+  const text = document.getElementById("status-text");
+  const cov = document.getElementById("status-cov");
+  const setEl = document.getElementById("stat-set");
+
+  if (jw < 0.491) {
+    badge.className = "status-banner status-distinct";
+    text.innerText = "Tier 3: Auto-Distinct (Automated Statistical Certainty)";
+    cov.innerText = "Conformal Set: {0} (Distinct)";
+    setEl.innerText = "{0}";
+    setEl.style.color = "#34d399";
+  } else if (jw > 0.898) {
+    badge.className = "status-banner status-duplicate";
+    text.innerText = "Tier 1: Auto-Merge Duplicate (Automated Statistical Certainty)";
+    cov.innerText = "Conformal Set: {1} (Duplicate)";
+    setEl.innerText = "{1}";
+    setEl.style.color = "#60a5fa";
+  } else {
+    badge.className = "status-banner status-breaker";
+    text.innerText = "Tier 2: STATUTORY SAFEGUARD TRIGGERED — Human Review Required";
+    cov.innerText = "Conformal Set: {0, 1} (Ambiguous)";
+    setEl.innerText = "{0, 1}";
+    setEl.style.color = "#fbbf24";
+  }
+
+  document.getElementById("trace-h1").innerText = `  + 562.965 * max(0, ${jw.toFixed(3)} - 0.559) = +${h1.toFixed(3)}`;
+  document.getElementById("trace-h2").innerText = `  - 679.490 * max(0, ${jw.toFixed(3)} - 0.806) = ${h2.toFixed(3)}`;
+  document.getElementById("trace-h3").innerText = `  +  96.830 * max(0, 0.898 - ${jw.toFixed(3)}) = +${h3.toFixed(3)}`;
+  document.getElementById("trace-h4").innerText = `  + 122.623 * max(0, ${jw.toFixed(3)} - 0.898) = +${h4.toFixed(3)}`;
+  document.getElementById("trace-total").innerText = `  = ${logit.toFixed(3)} → P(duplicate) = 1 / (1 + exp(-(${logit.toFixed(3)}))) = ${prob.toFixed(4)}`;
+}
+
+updateCalculator(0.75);
+</script>
+</body>
+</html>

@@ -17,7 +17,7 @@
     "data-governance",
     "dpi"
   ],
-  "author": "Daniel Olagunju <todak2000@gmail.com>, Temitope Olarewaju <temitope@futuxconsult.com>",
+  "author": "Daniel Olagunju <d.olagunju@futuxconsult.com>, Temitope Olarewaju <t.olarewaju@futuxconsult.com>",
   "license": "MIT",
   "dependencies": {
     "papaparse": "^5.4.1"

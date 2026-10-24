@@ -3,8 +3,8 @@
 `whitebox-dedup` provides interpretable entity deduplication using mathematically auditable Multivariate Adaptive Regression Splines (MARS) and Inductive Conformal Prediction (ICP).
 
 ## Authors
-- **Daniel Olagunju** (`todak2000@gmail.com`)
-- **Temitope Olarewaju** (`temitope@futuxconsult.com`)
+- **Daniel Olagunju** (`d.olagunju@futuxconsult.com`)
+- **Temitope Olarewaju** (`t.olarewaju@futuxconsult.com`)
 - **Affiliation:** FutuX Agri-consult Limited
 
 ---
